@@ -64,11 +64,93 @@
         
         /* Glass UI */
         .glass-panel { background: rgba(18,18,21,0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
-        .command-bar-container { position: fixed; top: 2rem; left: 50%; transform: translateX(-50%); z-index: 60; width: 90%; max-width: 800px; transition: all .5s cubic-bezier(.16,1,.3,1); }
-        .command-bar { background: rgba(18,18,21,.8); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,.08); border-radius: 999px; box-shadow: 0 10px 40px rgba(0,0,0,.3); padding: .5rem; display: flex; align-items: center; gap: .5rem; height: 3.5rem; }
         
-        .chat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; padding: 6rem 1rem 1rem 1rem; height: 100vh; width: 100vw; overflow-y: auto; }
-        .chat-card { display: flex; flex-direction: column; background: #0b0e11; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; position: relative; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.3); height: 600px; min-height: 400px; }
+        /* Header Dynamics */
+        .header-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 60;
+            padding: 1rem;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-hidden {
+            transform: translateY(-120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .command-bar {
+            background: rgba(18,18,21,.85);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 999px;
+            box-shadow: 0 10px 40px rgba(0,0,0,.3);
+            padding: 0.35rem 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            height: 3.5rem;
+            width: 100%;
+            max-width: 800px;
+            transition: all 0.3s ease;
+        }
+        
+        /* Logo Positioning */
+        .logo-container {
+            position: fixed;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        /* Estado Normal: Logo abaixo do Header */
+        .logo-normal {
+            top: 6rem; /* Empurrado para baixo */
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Estado Oculto: Header sobe, Logo sobe e diminui */
+        .logo-compact {
+            top: 1.5rem;
+            transform: scale(0.7);
+            opacity: 0.8;
+        }
+
+        /* Grid Modes */
+        .chat-container { 
+            padding: 0 1rem 1rem 1rem; 
+            height: 100vh; 
+            width: 100vw; 
+            overflow-y: auto; 
+            /* Padding top dinâmico via JS ou CSS fixo grande o suficiente */
+            padding-top: 10rem; 
+            transition: padding-top 0.5s ease;
+        }
+        
+        .chat-container.full-view {
+            padding-top: 6rem; /* Menos padding quando o header some */
+        }
+        
+        .mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; }
+        .mode-list { display: flex; flex-direction: column; gap: 1.5rem; max-width: 800px; margin: 0 auto; }
+        
+        .chat-card { display: flex; flex-direction: column; background: #0b0e11; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; position: relative; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        
+        .mode-grid .chat-card { height: 600px; min-height: 400px; }
+        .mode-list .chat-card { height: 600px; }
+
         .chat-card:hover { border-color: rgba(165,243,252,0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
         /* Snow & Effects */
@@ -77,10 +159,30 @@
         
         .nevethon-text { font-family: 'Russo One', sans-serif; font-style: italic; color: #fff; text-shadow: 0 0 10px rgba(165,243,252,.8), 0 0 20px rgba(99,102,241,.3); letter-spacing: 0.1em; }
         
+        /* Brand Flip */
+        .brand-flip-container { perspective: 1000px; width: 260px; height: 60px; position: relative; }
+        .brand-flipper { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.4,0,.2,1); }
+        .brand-front, .brand-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; align-items: center; justify-content: center; }
+        .brand-back { transform: rotateY(180deg); }
+        .flipped .brand-flipper { transform: rotateY(180deg); }
+        .multlives-wrapper { display: flex; align-items: center; gap: 0.8rem; }
+        .tech-gradient { background: linear-gradient(135deg, #6366f1 0%, #a5f3fc 100%); }
+
+        /* Mobile Specifics */
         @media (max-width: 768px) {
-            .command-bar-container { top: 1rem; width: 95%; }
-            .chat-grid { padding-top: 5rem; grid-template-columns: 1fr; }
-            .chat-card { height: 70vh; }
+            .header-container { padding: 0.5rem; width: 100%; gap: 0.5rem; }
+            .command-bar { height: 3.2rem; padding: 0.25rem; }
+            .chat-container { padding-top: 11rem; }
+            .chat-container.full-view { padding-top: 6rem; }
+            .mode-grid { grid-template-columns: 1fr; }
+            .mode-grid .chat-card, .mode-list .chat-card { height: 50vh; }
+            
+            /* Logo adjustments for mobile */
+            .logo-normal { top: 4.5rem; transform: scale(0.85); }
+            .logo-compact { top: 1rem; transform: scale(0.6); }
+            
+            /* Input font size for iOS zoom prevention */
+            input, select, textarea { font-size: 16px !important; }
         }
     </style>
 </head>
@@ -93,12 +195,16 @@
         // --- Icons ---
         const XIcon = ({size=16}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
         const PlusIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
-        const TwitchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>;
+        const TwitchIcon = ({width=16, height=16}) => <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>;
         const YoutubeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>;
         const TrashIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>;
         const ExternalLinkIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>;
         const RefreshIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M3 21v-5h5"></path></svg>;
-        const ChatIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>;
+        const ChatIcon = ({size=18}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>;
+        const LogoML = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 19V5" stroke="white" strokeWidth="3" strokeLinecap="round" /><path d="M19 19V5" stroke="white" strokeWidth="3" strokeLinecap="round" /><path d="M5 5L12 13L19 5" stroke="#a5f3fc" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+        const GridIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>;
+        const ListIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>;
+        const InstagramIcon = ({width,height}) => <svg xmlns="http://www.w3.org/2000/svg" width={width||16} height={height||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>;
 
         // --- Helpers ---
         const getPlatformColor = p => p==='twitch'?'text-[#9146ff]':p==='kick'?'text-[#53fc18]':p==='youtube'?'text-[#ff0000]':'text-white';
@@ -164,9 +270,9 @@
                                 {chat.platform === 'kick' && <span className="text-[10px] font-bold">K</span>}
                                 {chat.platform === 'youtube' && <YoutubeIcon />}
                             </div>
-                            <span className="text-sm font-bold text-white tracking-tight truncate max-w-[150px]">{chat.name}</span>
+                            <span className="text-sm font-bold text-white tracking-tight truncate max-w-[120px] md:max-w-[150px]">{chat.name}</span>
                         </div>
-                        <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-1 opacity-100 md:opacity-60 md:group-hover:opacity-100 transition-opacity">
                             <button onClick={() => setRefreshKey(k => k + 1)} className="p-1.5 hover:text-white hover:bg-white/10 rounded" title="Recarregar"><RefreshIcon /></button>
                             <button onClick={handlePopout} className="p-1.5 hover:text-ice hover:bg-white/10 rounded" title="Popout (Janela)"><ExternalLinkIcon /></button>
                             <button onClick={() => onRemove(chat.id)} className="p-1.5 text-red-400 hover:bg-red-500/10 rounded ml-1" title="Fechar"><TrashIcon /></button>
@@ -196,7 +302,7 @@
         };
 
         const PlatformSelector = ({ selected, onSelect }) => (
-            <div className="flex items-center gap-1 mr-2 bg-white/5 rounded-full p-1 border border-white/5">
+            <div className="flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/5 shrink-0">
                 {[
                     {id:'twitch', bg:'bg-[#9146ff]', icon:<TwitchIcon/>},
                     {id:'kick', bg:'bg-[#53fc18]', icon:<span className="font-bold text-[10px]">K</span>},
@@ -214,12 +320,60 @@
             </div>
         );
 
+        const Credits = () => {
+            return (
+                <div className={`fixed z-[60] flex items-center gap-2 transition-all duration-700 ease-out group/credits bottom-4 right-4 opacity-50 hover:opacity-100`}>
+                    <div className={`flex items-center gap-2 overflow-hidden transition-all duration-500 w-0 opacity-0 group-hover/credits:w-auto group-hover/credits:opacity-100`}>
+                        <a href="https://www.twitch.tv/kaozyking" target="_blank" className="p-1.5 bg-[#9146ff] text-white rounded-full hover:scale-110 transition-transform shadow-lg"><TwitchIcon width={12} height={12}/></a>
+                        <a href="https://www.instagram.com/oeduardomacedo" target="_blank" className="p-1.5 bg-pink-600 text-white rounded-full hover:scale-110 transition-transform shadow-lg"><InstagramIcon width={12} height={12}/></a>
+                    </div>
+                    <div className="px-2 py-1 bg-black/40 backdrop-blur-md border border-white/5 rounded-full text-[10px] font-medium text-gray-400 group-hover/credits:text-white group-hover/credits:bg-black/80 transition-colors shadow-xl cursor-default">
+                        Dev by <span className="font-bold text-ice">KaozyKing</span>
+                    </div>
+                </div>
+            )
+        };
+
+        const HeroBrand = ({ isVisible }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+            useEffect(() => { const interval = setInterval(() => setIsFlipped(p => !p), 8000); return () => clearInterval(interval); }, []);
+            
+            return (
+                <div className={`logo-container ${isVisible ? 'logo-normal' : 'logo-compact'}`}>
+                     <div className="brand-flip-container">
+                         <div className={`brand-flipper ${isFlipped ? 'flipped' : ''}`}>
+                             <div className="brand-front">
+                                 <div className="multlives-wrapper">
+                                    <div className="w-10 h-10 md:w-12 md:h-12 tech-gradient rounded-xl flex items-center justify-center text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] ring-1 ring-white/20">
+                                        <LogoML />
+                                    </div>
+                                    <div className="flex flex-col text-left">
+                                        <h1 className="font-bold text-xl md:text-2xl tracking-tight text-white leading-none font-display">MULTICHATS</h1>
+                                        <span className="text-[8px] uppercase tracking-[0.3em] text-gray-400 font-semibold mt-1 ml-0.5">Streaming Hub</span>
+                                    </div>
+                                </div>
+                             </div>
+                             <div className="brand-back">
+                                 <h2 className="nevethon-text text-xl md:text-2xl">
+                                     NEVETHON
+                                     <span className="snow-particle" style={{left:'10%',animationDelay:'0s'}}></span>
+                                     <span className="snow-particle" style={{left:'70%',animationDelay:'0.5s'}}></span>
+                                 </h2>
+                             </div>
+                         </div>
+                     </div>
+                </div>
+            );
+        };
+
         // --- Main App ---
         const App = () => {
             const [chats, setChats] = useState([]);
             const [inputVal, setInputVal] = useState("");
             const [platform, setPlatform] = useState("twitch");
-            const [isFlipped, setIsFlipped] = useState(false);
+            const [layoutMode, setLayoutMode] = useState("grid"); // 'grid' | 'list'
+            const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+            const headerTimeoutRef = useRef(null);
 
             // Carregar do localStorage
             useEffect(() => {
@@ -227,18 +381,50 @@
                 if(saved) {
                     try { setChats(JSON.parse(saved)); } catch(e) {}
                 }
+                const savedLayout = localStorage.getItem('nevethon-layout');
+                if(savedLayout) setLayoutMode(savedLayout);
             }, []);
 
             // Salvar no localStorage
             useEffect(() => {
                 localStorage.setItem('nevethon-multichat', JSON.stringify(chats));
             }, [chats]);
+            
+            useEffect(() => {
+                localStorage.setItem('nevethon-layout', layoutMode);
+            }, [layoutMode]);
 
-            // Animação do logo
-            useEffect(() => { 
-                const interval = setInterval(() => setIsFlipped(p => !p), 8000); 
-                return () => clearInterval(interval); 
-            }, []);
+            // Lógica de Ocultar Header (Inatividade)
+            useEffect(() => {
+                const showHeader = () => {
+                    setIsHeaderVisible(true);
+                    if (headerTimeoutRef.current) clearTimeout(headerTimeoutRef.current);
+                    
+                    // Só agenda para esconder se tiver chats (se não tiver, deixa fixo para instrução)
+                    if (chats.length > 0) {
+                        headerTimeoutRef.current = setTimeout(() => {
+                            setIsHeaderVisible(false);
+                        }, 2500);
+                    }
+                };
+
+                // Eventos
+                window.addEventListener('mousemove', showHeader);
+                window.addEventListener('touchstart', showHeader);
+                window.addEventListener('scroll', showHeader);
+                window.addEventListener('keydown', showHeader);
+
+                // Inicia visível
+                showHeader();
+
+                return () => {
+                    window.removeEventListener('mousemove', showHeader);
+                    window.removeEventListener('touchstart', showHeader);
+                    window.removeEventListener('scroll', showHeader);
+                    window.removeEventListener('keydown', showHeader);
+                    if (headerTimeoutRef.current) clearTimeout(headerTimeoutRef.current);
+                };
+            }, [chats.length]);
 
             const addChat = (e) => {
                 e.preventDefault();
@@ -246,7 +432,6 @@
                 
                 let name = inputVal.trim();
                 
-                // Tratamento especial Youtube (Extrair ID da URL se necessário)
                 if(platform === 'youtube') {
                     const match = name.match(/(?:v=|\/|youtu\.be\/)([0-9A-Za-z_-]{11})/);
                     if(match) name = match[1];
@@ -277,26 +462,11 @@
                         <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-150 mix-blend-overlay"></div>
                     </div>
 
-                    {/* Logo Area */}
-                    <div className="fixed top-0 left-0 right-0 h-32 flex justify-center pt-8 pointer-events-none z-50 transition-opacity duration-500 hover:opacity-100">
-                         <div className="relative">
-                             <div className={`transition-all duration-1000 transform ${isFlipped ? 'rotate-y-180 opacity-0' : 'opacity-100'}`}>
-                                 <h1 className="font-russo text-3xl md:text-4xl italic text-white drop-shadow-[0_0_15px_rgba(99,102,241,0.5)] flex items-center gap-2">
-                                     <ChatIcon /> MultChat
-                                 </h1>
-                             </div>
-                             <div className={`absolute inset-0 flex items-center justify-center transition-all duration-1000 transform ${!isFlipped ? 'rotate-y-180 opacity-0' : 'opacity-100'}`}>
-                                 <h2 className="nevethon-text text-2xl md:text-3xl">
-                                     NEVETHON
-                                     <span className="snow-particle" style={{left:'10%',animationDelay:'0s'}}></span>
-                                     <span className="snow-particle" style={{left:'70%',animationDelay:'0.5s'}}></span>
-                                 </h2>
-                             </div>
-                         </div>
-                    </div>
+                    <HeroBrand isVisible={isHeaderVisible} />
+                    <Credits />
 
-                    {/* Command Bar (Input) */}
-                    <div className="command-bar-container">
+                    {/* Header + Controls */}
+                    <div className={`header-container ${!isHeaderVisible && chats.length > 0 ? 'header-hidden' : ''}`}>
                         <form onSubmit={addChat} className="command-bar group">
                             <PlatformSelector selected={platform} onSelect={setPlatform} />
                             <div className="flex-1 h-full relative">
@@ -305,40 +475,51 @@
                                     value={inputVal} 
                                     onChange={e => setInputVal(e.target.value)} 
                                     placeholder={
-                                        platform==='twitch' ? "Nome do canal Twitch..." : 
-                                        platform==='kick' ? "Nome do canal Kick..." : 
-                                        "ID do Vídeo ou URL Youtube..."
+                                        platform==='twitch' ? "Canal Twitch..." : 
+                                        platform==='kick' ? "Canal Kick..." : 
+                                        "ID/URL Youtube..."
                                     } 
-                                    className="w-full h-full bg-transparent text-sm px-4 focus:outline-none text-white placeholder-gray-500 font-medium"
+                                    className="w-full h-full bg-transparent text-sm px-2 focus:outline-none text-white placeholder-gray-500 font-medium"
                                 />
                             </div>
-                            <button type="submit" className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 shadow-lg active:scale-95 transition-transform" title="Adicionar Chat">
+                            <button type="submit" className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 shadow-lg active:scale-95 transition-transform shrink-0" title="Adicionar">
                                 <PlusIcon />
                             </button>
                         </form>
+
+                        {/* Layout Toggle */}
+                        {chats.length > 0 && (
+                            <div className="flex bg-[#121215]/80 backdrop-blur-md rounded-full p-1 border border-white/5 shadow-lg animate-fade-in shrink-0">
+                                <button 
+                                    onClick={() => setLayoutMode('grid')}
+                                    className={`p-1.5 rounded-full transition-all flex items-center gap-1.5 px-3 ${layoutMode === 'grid' ? 'bg-white text-black font-bold' : 'text-gray-400 hover:text-white'}`}
+                                >
+                                    <GridIcon /> <span className="text-[10px] uppercase">Grade</span>
+                                </button>
+                                <button 
+                                    onClick={() => setLayoutMode('list')}
+                                    className={`p-1.5 rounded-full transition-all flex items-center gap-1.5 px-3 ${layoutMode === 'list' ? 'bg-white text-black font-bold' : 'text-gray-400 hover:text-white'}`}
+                                >
+                                    <ListIcon /> <span className="text-[10px] uppercase">Vert</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Grid de Chats */}
-                    <div className="chat-grid scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                    {/* Chat Container */}
+                    <div className={`chat-container scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent ${layoutMode === 'grid' ? 'mode-grid' : 'mode-list'} ${!isHeaderVisible && chats.length > 0 ? 'full-view' : ''}`}>
                         {chats.length === 0 && (
-                            <div className="col-span-full flex flex-col items-center justify-center text-center opacity-40 mt-20">
-                                <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-4 animate-pulse-glow">
-                                    <ChatIcon size={40} />
+                            <div className="flex flex-col items-center justify-center text-center opacity-40 mt-32 h-full w-full">
+                                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 animate-pulse-glow">
+                                    <ChatIcon size={32} />
                                 </div>
-                                <h3 className="text-xl font-bold text-white mb-2">Painel Vazio</h3>
-                                <p className="text-sm text-gray-400 max-w-md">Adicione chats da Twitch, Kick ou YouTube usando a barra superior para começar o monitoramento.</p>
+                                <h3 className="text-lg font-bold text-white mb-2">Painel Vazio</h3>
+                                <p className="text-xs text-gray-400 max-w-xs px-4">Adicione chats para começar.</p>
                             </div>
                         )}
                         {chats.map(chat => (
                             <ChatCard key={chat.id} chat={chat} onRemove={removeChat} />
                         ))}
-                    </div>
-
-                    {/* Footer / Info */}
-                    <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
-                        <div className="px-3 py-1 bg-black/60 backdrop-blur border border-white/5 rounded-full text-[10px] text-gray-400">
-                            Nevethon Multichat • <span className="text-ice">Chat Only Version</span>
-                        </div>
                     </div>
 
                 </div>
