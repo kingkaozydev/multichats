@@ -253,6 +253,7 @@
         const GridIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>;
         const ListIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>;
         const InstagramIcon = ({width,height}) => <svg xmlns="http://www.w3.org/2000/svg" width={width||16} height={height||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>;
+        const AlertCircleIcon = ({size=16}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>;
 
         // --- Helpers ---
         const getPlatformColor = p => p==='twitch'?'text-[#9146ff]':p==='kick'?'text-[#53fc18]':p==='youtube'?'text-[#ff0000]':'text-white';
@@ -428,6 +429,41 @@
             );
         };
 
+        const YoutubeWarningModal = ({ isOpen, onClose, onConfirm }) => {
+            if (!isOpen) return null;
+            return (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-[#1a1d21] border border-[#ff0000]/30 rounded-xl shadow-2xl max-w-md w-full overflow-hidden animate-slide-up">
+                        <div className="p-5 flex flex-col gap-4">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 rounded-full bg-[#ff0000]/10 flex items-center justify-center text-[#ff0000] shrink-0 border border-[#ff0000]/20">
+                                    <AlertCircleIcon size={24} />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-white font-bold text-lg mb-1">Atenção: YouTube Chat</h3>
+                                    <p className="text-gray-400 text-xs leading-relaxed">
+                                        Para chats do YouTube, é necessário usar o <strong>ID ou Link da transmissão</strong> que está acontecendo AO VIVO agora.
+                                        <br/><br/>
+                                        Este botão adicionará apenas um <strong>exemplo de vídeo antigo</strong>.
+                                        <br/><br/>
+                                        Se der erro ou o chat não carregar, cole o link da live atual na barra de pesquisa e selecione o ícone do YouTube.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex gap-3 mt-2">
+                                <button onClick={onClose} className="flex-1 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-bold rounded-lg transition-colors">
+                                    Cancelar
+                                </button>
+                                <button onClick={onConfirm} className="flex-1 px-4 py-2.5 bg-[#ff0000] hover:bg-[#d00000] text-white text-xs font-bold rounded-lg shadow-lg shadow-red-900/20 transition-colors">
+                                    Entendi, adicionar exemplo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         // --- Main App ---
         const App = () => {
             const [chats, setChats] = useState([]);
@@ -435,6 +471,7 @@
             const [platform, setPlatform] = useState("twitch");
             const [layoutMode, setLayoutMode] = useState("grid"); // 'grid' | 'list'
             const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+            const [showYtWarning, setShowYtWarning] = useState(false);
             const headerTimeoutRef = useRef(null);
 
             // Carregar do localStorage
@@ -511,8 +548,22 @@
             };
             
             const addSuggestion = (name, plat) => {
+                if(plat === 'youtube' && name === 'y4tPb3eYiAQ') {
+                    setShowYtWarning(true);
+                    return;
+                }
+                
                 if(chats.some(c => c.name === name && c.platform === plat)) return;
                 setChats(prev => [...prev, { id: Date.now(), name, platform: plat }]);
+            };
+
+            const confirmYoutubeSuggestion = () => {
+                const name = 'y4tPb3eYiAQ';
+                const plat = 'youtube';
+                if(!chats.some(c => c.name === name && c.platform === plat)) {
+                    setChats(prev => [...prev, { id: Date.now(), name, platform: plat }]);
+                }
+                setShowYtWarning(false);
             };
 
             const removeChat = (id) => {
@@ -531,6 +582,12 @@
 
                     <HeroBrand isVisible={isHeaderVisible} />
                     <Credits />
+                    
+                    <YoutubeWarningModal 
+                        isOpen={showYtWarning} 
+                        onClose={() => setShowYtWarning(false)} 
+                        onConfirm={confirmYoutubeSuggestion} 
+                    />
 
                     {/* Header + Controls */}
                     <div className={`header-container ${!isHeaderVisible && chats.length > 0 ? 'header-hidden' : ''}`}>
@@ -558,7 +615,7 @@
                         <div className="flex gap-3 animate-fade-in mt-[-0.5rem] items-center">
                             <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Sugestões:</span>
                             <button onClick={() => addSuggestion('jonvlogs', 'twitch')} className="text-xs text-[#9146ff] hover:text-white bg-[#9146ff]/10 hover:bg-[#9146ff] px-2 py-0.5 rounded border border-[#9146ff]/20 transition-all">JonVlogs</button>
-                            <button onClick={() => addSuggestion('jonvlogs', 'youtube')} className="text-xs text-[#ff0000] hover:text-white bg-[#ff0000]/10 hover:bg-[#ff0000] px-2 py-0.5 rounded border border-[#ff0000]/20 transition-all">Jonvlogs (YT)</button>
+                            <button onClick={() => addSuggestion('y4tPb3eYiAQ', 'youtube')} className="text-xs text-[#ff0000] hover:text-white bg-[#ff0000]/10 hover:bg-[#ff0000] px-2 py-0.5 rounded border border-[#ff0000]/20 transition-all">Jonvlogs (YT - Exemplo)</button>
                         </div>
 
                         {/* Layout Toggle */}
