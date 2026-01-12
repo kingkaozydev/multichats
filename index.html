@@ -133,23 +133,61 @@
             padding: 0 1rem 1rem 1rem; 
             height: 100vh; 
             width: 100vw; 
-            overflow-y: auto; 
             /* Padding top dinâmico via JS ou CSS fixo grande o suficiente */
             padding-top: 10rem; 
             transition: padding-top 0.5s ease;
+            box-sizing: border-box;
         }
         
         .chat-container.full-view {
-            padding-top: 6rem; /* Menos padding quando o header some */
+            padding-top: 5rem; /* Menos padding quando o header some */
         }
         
-        .mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; }
-        .mode-list { display: flex; flex-direction: column; gap: 1.5rem; max-width: 800px; margin: 0 auto; }
+        /* MODE GRID: Chats side-by-side (columns), full height */
+        .mode-grid {
+            display: flex;
+            flex-direction: row;
+            overflow-x: auto; /* Scroll horizontal se necessário */
+            overflow-y: hidden; /* Scroll vertical dentro do chat apenas */
+            gap: 1rem;
+            align-items: stretch; /* Estica altura */
+        }
+
+        /* MODE LIST: Stacked vertically */
+        .mode-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+            overflow-y: auto; /* Container rola */
+        }
         
-        .chat-card { display: flex; flex-direction: column; background: #0b0e11; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; position: relative; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .chat-card {
+            display: flex;
+            flex-direction: column;
+            background: #0b0e11;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
         
-        .mode-grid .chat-card { height: 600px; min-height: 400px; }
-        .mode-list .chat-card { height: 600px; }
+        /* Grid Mode Card: Full Height, Flex width */
+        .mode-grid .chat-card {
+            flex: 1;
+            min-width: 320px; /* Largura mínima para leitura */
+            height: 100%; /* Ocupa altura total do container */
+            max-height: 100%;
+        }
+
+        /* List Mode Card: Fixed height */
+        .mode-list .chat-card {
+            height: 600px;
+            flex-shrink: 0;
+        }
 
         .chat-card:hover { border-color: rgba(165,243,252,0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
@@ -174,8 +212,12 @@
             .command-bar { height: 3.2rem; padding: 0.25rem; }
             .chat-container { padding-top: 11rem; }
             .chat-container.full-view { padding-top: 6rem; }
-            .mode-grid { grid-template-columns: 1fr; }
-            .mode-grid .chat-card, .mode-list .chat-card { height: 50vh; }
+            
+            /* Em mobile, Grid vira lista horizontal deslizante */
+            .mode-grid { flex-direction: column; overflow-x: hidden; overflow-y: auto; } /* Força vertical em mobile por usabilidade */
+            .mode-grid .chat-card { min-width: 100%; height: 60vh; margin-bottom: 1rem; }
+
+            .mode-list .chat-card { height: 60vh; }
             
             /* Logo adjustments for mobile */
             .logo-normal { top: 4.5rem; transform: scale(0.85); }
@@ -183,6 +225,12 @@
             
             /* Input font size for iOS zoom prevention */
             input, select, textarea { font-size: 16px !important; }
+        }
+
+        /* Desktop Override to enforce side-by-side on large screens */
+        @media (min-width: 769px) {
+            .mode-grid { flex-direction: row; }
+            .mode-grid .chat-card { height: 100%; }
         }
     </style>
 </head>
@@ -447,6 +495,11 @@
                 setChats(prev => [...prev, { id: Date.now(), name, platform }]);
                 setInputVal("");
             };
+            
+            const addSuggestion = (name, plat) => {
+                if(chats.some(c => c.name === name && c.platform === plat)) return;
+                setChats(prev => [...prev, { id: Date.now(), name, platform: plat }]);
+            };
 
             const removeChat = (id) => {
                 setChats(prev => prev.filter(c => c.id !== id));
@@ -475,9 +528,9 @@
                                     value={inputVal} 
                                     onChange={e => setInputVal(e.target.value)} 
                                     placeholder={
-                                        platform==='twitch' ? "Canal Twitch..." : 
-                                        platform==='kick' ? "Canal Kick..." : 
-                                        "ID/URL Youtube..."
+                                        platform==='twitch' ? "Ex: jonvlogs..." : 
+                                        platform==='kick' ? "Ex: adinross..." : 
+                                        "Ex: URL ou ID (y4tPb3eYiAQ)..."
                                     } 
                                     className="w-full h-full bg-transparent text-sm px-2 focus:outline-none text-white placeholder-gray-500 font-medium"
                                 />
@@ -486,6 +539,13 @@
                                 <PlusIcon />
                             </button>
                         </form>
+                        
+                        {/* Suggestions - Always visible in header */}
+                        <div className="flex gap-3 animate-fade-in mt-[-0.5rem] items-center">
+                            <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Sugestões:</span>
+                            <button onClick={() => addSuggestion('jonvlogs', 'twitch')} className="text-xs text-[#9146ff] hover:text-white bg-[#9146ff]/10 hover:bg-[#9146ff] px-2 py-0.5 rounded border border-[#9146ff]/20 transition-all">JonVlogs</button>
+                            <button onClick={() => addSuggestion('y4tPb3eYiAQ', 'youtube')} className="text-xs text-[#ff0000] hover:text-white bg-[#ff0000]/10 hover:bg-[#ff0000] px-2 py-0.5 rounded border border-[#ff0000]/20 transition-all">Live YT</button>
+                        </div>
 
                         {/* Layout Toggle */}
                         {chats.length > 0 && (
@@ -514,7 +574,7 @@
                                     <ChatIcon size={32} />
                                 </div>
                                 <h3 className="text-lg font-bold text-white mb-2">Painel Vazio</h3>
-                                <p className="text-xs text-gray-400 max-w-xs px-4">Adicione chats para começar.</p>
+                                <p className="text-xs text-gray-400 max-w-xs px-4">Adicione chats para começar ou use as sugestões acima.</p>
                             </div>
                         )}
                         {chats.map(chat => (
