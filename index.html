@@ -256,7 +256,7 @@
 
         // --- Helpers ---
         const getPlatformColor = p => p==='twitch'?'text-[#9146ff]':p==='kick'?'text-[#53fc18]':p==='youtube'?'text-[#ff0000]':'text-white';
-        const hostname = typeof window!=='undefined'&&window.location.hostname?window.location.hostname:"localhost";
+        const hostname = typeof window!=='undefined' && window.location.hostname ? window.location.hostname : "localhost";
 
         // --- Components ---
         
@@ -281,6 +281,8 @@
                             src={`https://kick.com/popout/${streamName}/chat`} 
                             className="w-full h-full border-none bg-[#0b0e11]" 
                             referrerPolicy="no-referrer"
+                            allow="storage-access-by-user-activation; clipboard-write; web-share"
+                            sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-storage-access-by-user-activation"
                         ></iframe>
                     )}
                     {status==='loaded' && showNativeHint && (
@@ -306,6 +308,14 @@
                 else if(chat.platform === 'youtube') url = `https://www.youtube.com/live_chat?v=${chat.name}`;
                 
                 window.open(url, `chat-${chat.id}`, "width=400,height=600");
+            };
+
+            const getTwitchUrl = (name) => {
+                const parents = [hostname, 'localhost', '127.0.0.1'];
+                // Remove duplicates and empty strings
+                const uniqueParents = [...new Set(parents.filter(Boolean))];
+                const parentQuery = uniqueParents.map(p => `parent=${p}`).join('&');
+                return `https://www.twitch.tv/embed/${name}/chat?${parentQuery}&darkpopout`;
             };
 
             return (
@@ -334,14 +344,18 @@
                         ) : chat.platform === 'twitch' ? (
                             <iframe 
                                 key={refreshKey}
-                                src={`https://www.twitch.tv/embed/${chat.name}/chat?parent=${hostname}&parent=localhost&darkpopout`}
+                                src={getTwitchUrl(chat.name)}
                                 className="w-full h-full border-none"
+                                allow="storage-access-by-user-activation; clipboard-write; web-share"
+                                sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-storage-access-by-user-activation allow-modals"
                             ></iframe>
                         ) : (
                             <iframe 
                                 key={refreshKey}
                                 src={`https://www.youtube.com/live_chat?v=${chat.name}&embed_domain=${hostname}`}
                                 className="w-full h-full border-none"
+                                allow="storage-access-by-user-activation; clipboard-write; web-share; autoplay"
+                                sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-storage-access-by-user-activation"
                             ></iframe>
                         )}
                     </div>
@@ -544,7 +558,7 @@
                         <div className="flex gap-3 animate-fade-in mt-[-0.5rem] items-center">
                             <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Sugestões:</span>
                             <button onClick={() => addSuggestion('jonvlogs', 'twitch')} className="text-xs text-[#9146ff] hover:text-white bg-[#9146ff]/10 hover:bg-[#9146ff] px-2 py-0.5 rounded border border-[#9146ff]/20 transition-all">JonVlogs</button>
-                            <button onClick={() => addSuggestion('y4tPb3eYiAQ', 'youtube')} className="text-xs text-[#ff0000] hover:text-white bg-[#ff0000]/10 hover:bg-[#ff0000] px-2 py-0.5 rounded border border-[#ff0000]/20 transition-all">Live YT</button>
+                            <button onClick={() => addSuggestion('jonvlogs', 'youtube')} className="text-xs text-[#ff0000] hover:text-white bg-[#ff0000]/10 hover:bg-[#ff0000] px-2 py-0.5 rounded border border-[#ff0000]/20 transition-all">Jonvlogs (YT)</button>
                         </div>
 
                         {/* Layout Toggle */}
