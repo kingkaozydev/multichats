@@ -164,7 +164,6 @@
             return (
                 <div className={`fixed inset-0 z-[200] bg-[#09090b] flex flex-col items-center justify-center transition-opacity duration-700 ease-in-out ${isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
                     
-                    {/* Background Effects specifically for loading */}
                     <div className="absolute inset-0 z-0 pointer-events-none opacity-50">
                         <div className="absolute top-1/4 left-1/4 w-[50%] h-[50%] rounded-full bg-[#6366f1]/20 blur-[120px] mix-blend-screen animate-pulse"></div>
                         <div className="absolute bottom-1/4 right-1/4 w-[50%] h-[50%] rounded-full bg-[#a5f3fc]/20 blur-[120px] mix-blend-screen animate-pulse delay-700"></div>
@@ -303,18 +302,17 @@
                 return `https://www.twitch.tv/embed/${name}/chat?${parentQuery}&darkpopout`;
             };
 
-            const pColor = PLATFORMS[chat.platform].color;
-            const pIcon = PLATFORMS[chat.platform].icon;
+            // Escudo Anti-Crash: Garante que nunca falha se a plataforma não for reconhecida
+            const platformData = PLATFORMS[chat.platform] || { color: 'text-white', icon: <span className="text-[10px] font-bold">?</span> };
+            const pColor = platformData.color;
+            const pIcon = platformData.icon;
 
             return (
                 <div className={`chat-card group animate-slide-up ${isHidden ? 'chat-hidden' : ''} ${isFocused ? 'chat-focused' : ''}`}>
-                    {/* Cabeçalho Melhorado do ChatCard */}
                     <div className="h-14 bg-[#121215] border-b border-white/5 flex items-center justify-between px-3 md:px-4 shrink-0 z-20">
                         
-                        {/* Esquerda: Info do Chat Atual + Alternadores + Add */}
                         <div className="flex items-center gap-2 overflow-x-auto hide-scroll w-full mr-2 fade-mask py-1">
                             
-                            {/* Chat Atual (Maior e Mais Visível) */}
                             <div className={`flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 shrink-0 shadow-inner border border-white/5 ${pColor}`}>
                                 <div className="scale-125">{pIcon}</div>
                             </div>
@@ -322,12 +320,11 @@
                                 {chat.originalName || chat.name}
                             </span>
 
-                            {/* Alternador de Abas (Só aparece no Modo Foco se houverem + chats) */}
                             {isFocused && allChats.length > 1 && (
                                 <React.Fragment>
                                     <div className="w-px h-6 bg-white/10 shrink-0 mx-2"></div>
                                     {allChats.filter(c => c.id !== chat.id).map(otherChat => {
-                                        const oPlatform = PLATFORMS[otherChat.platform];
+                                        const oPlatform = PLATFORMS[otherChat.platform] || { color: 'text-white', icon: <span className="text-[10px] font-bold">?</span> };
                                         return (
                                             <button
                                                 key={otherChat.id}
@@ -342,7 +339,6 @@
                                 </React.Fragment>
                             )}
 
-                            {/* Botão Adicionar Chat embutido no Card */}
                             <div className="w-px h-6 bg-white/10 shrink-0 mx-2"></div>
                             <button
                                 onClick={onAddClick}
@@ -355,34 +351,27 @@
 
                         </div>
 
-                        {/* Direita: Ações de Layout e Ferramentas */}
                         <div className="flex items-center gap-1.5 shrink-0 pl-2">
-                            
-                            {/* Alternadores de Layout Embutidos (Escondidos em telas muito pequenas) */}
                             <div className="hidden sm:flex items-center bg-black/40 rounded-full border border-white/5 p-0.5 mr-1">
                                 <button onClick={() => setLayoutMode('grid')} className={`p-1.5 rounded-full transition-all ${layoutMode === 'grid' ? 'bg-white text-black shadow' : 'text-gray-400 hover:text-white hover:bg-white/10'}`} title="Modo Grade"><GridIcon /></button>
                                 <button onClick={() => setLayoutMode('list')} className={`p-1.5 rounded-full transition-all hidden md:block ${layoutMode === 'list' ? 'bg-white text-black shadow' : 'text-gray-400 hover:text-white hover:bg-white/10'}`} title="Modo Lista Vertical"><ListIcon /></button>
                                 <button onClick={() => setLayoutMode('focus')} className={`p-1.5 rounded-full transition-all ${layoutMode === 'focus' ? 'bg-white text-black shadow' : 'text-gray-400 hover:text-white hover:bg-white/10'}`} title="Modo Foco Tela Cheia"><FocusIcon /></button>
                             </div>
 
-                            {/* Alternador Layout Mobile (Simplificado) */}
                             <button onClick={() => setLayoutMode(layoutMode === 'focus' ? 'grid' : 'focus')} className="p-2 text-gray-400 hover:text-white bg-black/40 rounded-lg border border-white/5 sm:hidden transition-colors">
                                 {layoutMode === 'focus' ? <GridIcon /> : <FocusIcon />}
                             </button>
 
-                            {/* Ferramentas Básicas */}
                             <button onClick={() => setRefreshKey(k => k + 1)} className="p-2 hover:text-white hover:bg-white/10 rounded-lg transition-colors hidden sm:block" title="Recarregar"><RefreshIcon /></button>
                             <button onClick={() => {
                                 let url = chat.platform === 'twitch' ? `https://www.twitch.tv/popout/${chat.name}/chat` : chat.platform === 'kick' ? `https://kick.com/popout/${chat.name}/chat` : `https://www.youtube.com/live_chat?v=${chat.ytVideoId || chat.name}`;
                                 window.open(url, `chat-${chat.id}`, "width=400,height=600");
                             }} className="p-2 hover:text-ice hover:bg-white/10 rounded-lg transition-colors hidden sm:block" title="Popout (Janela Nativa)"><ExternalLinkIcon /></button>
                             
-                            {/* Botão Fechar Chat */}
                             <button onClick={() => onRemove(chat.id)} className="p-2 text-red-400 hover:text-white hover:bg-red-500/80 rounded-lg transition-colors ml-1" title="Fechar Chat"><TrashIcon /></button>
                         </div>
                     </div>
                     
-                    {/* Renderizador do Iframe */}
                     <div className="flex-1 relative bg-[#09090b] flex items-center justify-center">
                         {chat.platform === 'youtube' && chat.isSearching ? (
                             <div className="text-center animate-pulse-glow flex flex-col items-center gap-2 opacity-50">
@@ -422,8 +411,37 @@
 
         // --- Main App ---
         const App = () => {
-            const [chats, setChats] = useState([]);
-            const [layoutMode, setLayoutMode] = useState("grid");
+            // Estado Preguiçoso: Carrega da memória ANTES de renderizar a tela. Impede bugs.
+            const [chats, setChats] = useState(() => {
+                try {
+                    // Busca dados da chave atual ou das antigas (Migração segura)
+                    const saved = localStorage.getItem('multichats-data') || 
+                                  localStorage.getItem('nevethon-multichat') || 
+                                  localStorage.getItem('multichat-v2');
+                    
+                    if (saved) {
+                        const parsedChats = JSON.parse(saved);
+                        if (Array.isArray(parsedChats)) {
+                            return parsedChats
+                                .filter(c => c && c.id && c.name && c.platform && PLATFORMS[c.platform]) // Impede crashes com plataformas corrompidas
+                                .map(c => ({
+                                    ...c,
+                                    originalName: c.originalName || c.name, // Garante que o nome original existe
+                                    isSearching: false // Força a reiniciar o estado de busca
+                                }));
+                        }
+                    }
+                } catch (e) {
+                    console.error("Erro ao migrar dados antigos", e);
+                }
+                return [];
+            });
+
+            const [layoutMode, setLayoutMode] = useState(() => {
+                const savedLayout = localStorage.getItem('multichats-layout');
+                return ['grid', 'list', 'focus'].includes(savedLayout) ? savedLayout : "grid";
+            });
+
             const [focusedId, setFocusedId] = useState(null);
             const [isAddModalOpen, setIsAddModalOpen] = useState(false);
             const [showYtWarning, setShowYtWarning] = useState(false);
@@ -432,51 +450,30 @@
             const [isLoading, setIsLoading] = useState(true);
             const [isFadingOutLoading, setIsFadingOutLoading] = useState(false);
 
-            // Sequência de animação de Loading na montagem
             useEffect(() => {
-                const timer1 = setTimeout(() => setIsFadingOutLoading(true), 2000); // Começa a desaparecer após 2s
-                const timer2 = setTimeout(() => setIsLoading(false), 2700); // Remove completamente do DOM após o fade
+                const timer1 = setTimeout(() => setIsFadingOutLoading(true), 2000);
+                const timer2 = setTimeout(() => setIsLoading(false), 2700);
                 return () => { clearTimeout(timer1); clearTimeout(timer2); };
             }, []);
 
-            // Carregar do localStorage
+            // Assegura que num reload se houver chats e layout='focus', um é focado.
             useEffect(() => {
-                const saved = localStorage.getItem('multichats-data');
-                if(saved) { 
-                    try { 
-                        const parsedChats = JSON.parse(saved);
-                        // Validação e Sanitização de Dados Antigos
-                        if (Array.isArray(parsedChats)) {
-                            const validChats = parsedChats
-                                .filter(c => c && c.id && c.name && c.platform) // Ignora se faltar o essencial
-                                .map(c => ({
-                                    ...c,
-                                    originalName: c.originalName || c.name, // Garante que o nome original existe (versões antigas n tinham)
-                                    isSearching: false // Previne ficar preso em "buscando..." se a página recarregar
-                                }));
-                            setChats(validChats);
-                        } else {
-                            localStorage.removeItem('multichats-data'); // Formato totalmente incorreto, limpa tudo.
-                        }
-                    } catch(e) {
-                        localStorage.removeItem('multichats-data'); // Se o JSON estiver quebrado, limpa
-                    } 
+                if (layoutMode === 'focus' && chats.length > 0 && !focusedId) {
+                    setFocusedId(chats[0].id);
                 }
-                
-                // Limpeza proativa de chaves de versões antigas para libertar espaço
-                localStorage.removeItem('multichat-v2');
-                localStorage.removeItem('nevethon-multichat');
+            }, [chats, layoutMode, focusedId]);
 
-                const savedLayout = localStorage.getItem('multichats-layout');
-                if(savedLayout && ['grid', 'list', 'focus'].includes(savedLayout)) {
-                    setLayoutMode(savedLayout);
-                }
-            }, []);
-
+            // Salva apenas quando os chats sofrem alteração válida
             useEffect(() => { localStorage.setItem('multichats-data', JSON.stringify(chats)); }, [chats]);
             useEffect(() => { localStorage.setItem('multichats-layout', layoutMode); }, [layoutMode]);
 
-            // YouTube Auto-Discovery (Sistema Duplo Seguro)
+            // Limpa as chaves antigas para libertar espaço (já migrámos no useState inicial)
+            useEffect(() => {
+                localStorage.removeItem('multichat-v2');
+                localStorage.removeItem('nevethon-multichat');
+            }, []);
+
+            // YouTube Auto-Discovery
             const checkYTLive = async (handle) => {
                 const clean = handle.replace('@', '');
                 const targetUrl = `https://www.youtube.com/@${clean}/live`;
@@ -555,7 +552,6 @@
                 setChats(prev => [...prev, newChat]);
                 setIsAddModalOpen(false);
 
-                // Alterna automaticamente para o novo chat em Modo Foco
                 setLayoutMode('focus');
                 setFocusedId(newChat.id);
 
@@ -577,10 +573,8 @@
             return (
                 <div className="relative min-h-screen w-full bg-[#09090b] text-gray-100 font-sans overflow-hidden">
                     
-                    {/* Componente de Loading Inicial */}
                     {isLoading && <LoadingScreen isFadingOut={isFadingOutLoading} />}
 
-                    {/* Background Effects */}
                     <div className="absolute inset-0 z-0 pointer-events-none">
                         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-[#6366f1]/10 blur-[150px] animate-aurora-1 mix-blend-screen"></div>
                         <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-[#a5f3fc]/10 blur-[150px] animate-aurora-2 mix-blend-screen"></div>
@@ -588,18 +582,15 @@
 
                     <HeroBrand hasChats={chats.length > 0} />
                     
-                    {/* Modais */}
                     <AddChatModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onAdd={handleAddChat} />
                     <YoutubeWarningModal isOpen={showYtWarning} onClose={() => setShowYtWarning(false)} onConfirm={() => {
                         handleAddChat('youtube', 'y4tPb3eYiAQ');
                         setShowYtWarning(false);
                     }} />
 
-                    {/* Chat Container (Aplica o Empty State Centrado se não houver chats) */}
                     <div className={`chat-container hide-scroll ${chats.length === 0 ? 'empty-state' : 'active-state'} ${layoutMode === 'grid' ? 'mode-grid' : layoutMode === 'list' ? 'mode-list' : 'mode-focus'}`}>
                         
                         {chats.length === 0 ? (
-                            /* ESTADO VAZIO: Centralizado na tela */
                             <div className="flex flex-col items-center justify-center h-full gap-4 w-full animate-fade-in relative z-10">
                                 <button 
                                     onClick={() => setIsAddModalOpen(true)}
@@ -623,7 +614,6 @@
                                 </div>
                             </div>
                         ) : (
-                            /* CARDS DE CHAT ATIVOS */
                             chats.map(chat => (
                                 <ChatCard 
                                     key={chat.id} 
