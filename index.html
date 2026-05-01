@@ -5,24 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <!-- SEO & Meta Tags -->
-    <meta name="description" content="Multichat Nevethon: Acompanhe múltiplos chats de streamers da Twitch, Kick e YouTube simultaneamente. Ferramenta ideal para moderadores e fãs com layout responsivo e modo noturno.">
-    <meta name="keywords" content="multichat, twitch chat, kick chat, youtube live chat, multistream, nevethon, jonvlogs, chat viewer, stream tools, moderador chat">
+    <meta name="description" content="Multichat Ultimate: Acompanhe múltiplos chats de streamers da Twitch, Kick e YouTube simultaneamente. Ferramenta ideal para moderadores e fãs com layout responsivo e modo noturno.">
+    <meta name="keywords" content="multichat, twitch chat, kick chat, youtube live chat, multistream, chat viewer, stream tools, moderador chat">
     <meta name="author" content="KaozyKing">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#09090b">
 
     <!-- Open Graph / Social (Facebook, Discord, WhatsApp) -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Multichat - Nevethon (Ultimate)">
+    <meta property="og:title" content="Multichat Ultimate">
     <meta property="og:description" content="Visualize e interaja com vários chats de live stream ao mesmo tempo. Suporte para Twitch, Kick e YouTube em um único lugar.">
-    <meta property="og:site_name" content="Multichat Nevethon">
+    <meta property="og:site_name" content="Multichat Ultimate">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Multichat - Nevethon (Ultimate)">
+    <meta property="twitter:title" content="Multichat Ultimate">
     <meta property="twitter:description" content="Acompanhe múltiplos chats de streamers da Twitch, Kick e YouTube simultaneamente.">
 
-    <title>Multichat - Nevethon (Ultimate)</title>
+    <title>Multichat Ultimate</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'><path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' stroke='%23a5f3fc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>">
     
     <!-- React & Tailwind -->
@@ -182,6 +182,15 @@
             overflow-y: auto; /* Container rola */
         }
         
+        /* Focus Mode Classes */
+        .mode-focus { display: flex; flex-direction: column; overflow: hidden; padding: 0 !important; }
+        .chat-hidden { position: absolute !important; opacity: 0 !important; pointer-events: none !important; width: 1px !important; height: 1px !important; z-index: -1 !important; transform: scale(0.01); }
+        .chat-focused { flex: 1; width: 100%; height: 100%; max-height: 100%; border-radius: 0; border: none; }
+        
+        /* Bottom Dock */
+        .bottom-dock { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 70; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; padding: 0.5rem; border-radius: 99px; background: rgba(18,18,21,0.85); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 40px rgba(0,0,0,0.5); transition: all 0.5s ease; width: max-content; max-width: 90vw; }
+        .dock-hidden { transform: translate(-50%, 150%); opacity: 0; pointer-events: none; }
+        
         .chat-card {
             display: flex;
             flex-direction: column;
@@ -210,19 +219,6 @@
 
         .chat-card:hover { border-color: rgba(165,243,252,0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        /* Snow & Effects */
-        .snow-particle { position: absolute; background: #fff; border-radius: 50%; pointer-events: none; animation: iceFall 2s linear infinite; box-shadow: 0 0 4px rgba(255,255,255,.9); }
-        @keyframes iceFall { 0% { transform: translateY(0); opacity: 0; } 10%, 90% { opacity: 1; } 100% { transform: translateY(35px); opacity: 0; } }
-        
-        .nevethon-text { font-family: 'Russo One', sans-serif; font-style: italic; color: #fff; text-shadow: 0 0 10px rgba(165,243,252,.8), 0 0 20px rgba(99,102,241,.3); letter-spacing: 0.1em; }
-        
-        /* Brand Flip */
-        .brand-flip-container { perspective: 1000px; width: 260px; height: 60px; position: relative; }
-        .brand-flipper { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.4,0,.2,1); }
-        .brand-front, .brand-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; align-items: center; justify-content: center; }
-        .brand-back { transform: rotateY(180deg); }
-        .flipped .brand-flipper { transform: rotateY(180deg); }
-        .multlives-wrapper { display: flex; align-items: center; gap: 0.8rem; }
         .tech-gradient { background: linear-gradient(135deg, #6366f1 0%, #a5f3fc 100%); }
 
         /* Mobile Specifics */
@@ -273,6 +269,9 @@
         const ListIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>;
         const InstagramIcon = ({width,height}) => <svg xmlns="http://www.w3.org/2000/svg" width={width||16} height={height||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>;
         const AlertCircleIcon = ({size=16}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>;
+        const FocusIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3h18v18H3z"></path><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>;
+        const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
+        const EyeOffIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>;
 
         // --- Helpers ---
         const getPlatformColor = p => p==='twitch'?'text-[#9146ff]':p==='kick'?'text-[#53fc18]':p==='youtube'?'text-[#ff0000]':'text-white';
@@ -318,28 +317,27 @@
             );
         };
 
-        const ChatCard = ({ chat, onRemove }) => {
+        const ChatCard = ({ chat, onRemove, isHidden, isFocused, onFocus }) => {
             const [refreshKey, setRefreshKey] = useState(0);
 
             const handlePopout = () => {
                 let url = "";
                 if(chat.platform === 'twitch') url = `https://www.twitch.tv/popout/${chat.name}/chat`;
                 else if(chat.platform === 'kick') url = `https://kick.com/popout/${chat.name}/chat`;
-                else if(chat.platform === 'youtube') url = `https://www.youtube.com/live_chat?v=${chat.name}`;
+                else if(chat.platform === 'youtube') url = `https://www.youtube.com/live_chat?v=${chat.ytVideoId || chat.name}`;
                 
                 window.open(url, `chat-${chat.id}`, "width=400,height=600");
             };
 
             const getTwitchUrl = (name) => {
                 const parents = [hostname, 'localhost', '127.0.0.1'];
-                // Remove duplicates and empty strings
                 const uniqueParents = [...new Set(parents.filter(Boolean))];
                 const parentQuery = uniqueParents.map(p => `parent=${p}`).join('&');
                 return `https://www.twitch.tv/embed/${name}/chat?${parentQuery}&darkpopout`;
             };
 
             return (
-                <div className="chat-card group animate-slide-up">
+                <div className={`chat-card group animate-slide-up ${isHidden ? 'chat-hidden' : ''} ${isFocused ? 'chat-focused' : ''}`}>
                     {/* Header do Card */}
                     <div className="h-10 bg-[#121215] border-b border-white/5 flex items-center justify-between px-3 shrink-0 z-20">
                         <div className="flex items-center gap-2">
@@ -348,18 +346,27 @@
                                 {chat.platform === 'kick' && <span className="text-[10px] font-bold">K</span>}
                                 {chat.platform === 'youtube' && <YoutubeIcon />}
                             </div>
-                            <span className="text-sm font-bold text-white tracking-tight truncate max-w-[120px] md:max-w-[150px]">{chat.name}</span>
+                            <span className="text-sm font-bold text-white tracking-tight truncate max-w-[120px] md:max-w-[150px]">{chat.originalName || chat.name}</span>
                         </div>
                         <div className="flex items-center gap-1 opacity-100 md:opacity-60 md:group-hover:opacity-100 transition-opacity">
                             <button onClick={() => setRefreshKey(k => k + 1)} className="p-1.5 hover:text-white hover:bg-white/10 rounded" title="Recarregar"><RefreshIcon /></button>
                             <button onClick={handlePopout} className="p-1.5 hover:text-ice hover:bg-white/10 rounded" title="Popout (Janela)"><ExternalLinkIcon /></button>
+                            {!isFocused && <button onClick={() => onFocus(chat.id)} className="p-1.5 hover:text-accent hover:bg-white/10 rounded hidden md:block" title="Focar"><FocusIcon /></button>}
                             <button onClick={() => onRemove(chat.id)} className="p-1.5 text-red-400 hover:bg-red-500/10 rounded ml-1" title="Fechar"><TrashIcon /></button>
                         </div>
                     </div>
                     
                     {/* Conteúdo do Chat */}
-                    <div className="flex-1 relative bg-[#09090b]">
-                        {chat.platform === 'kick' ? (
+                    <div className="flex-1 relative bg-[#09090b] flex items-center justify-center">
+                        {chat.platform === 'youtube' && chat.isSearching ? (
+                            <div className="text-center animate-pulse-glow flex flex-col items-center gap-2 opacity-50">
+                                <SearchIcon /> <span className="text-xs text-gray-400">Buscando live de {chat.originalName}...</span>
+                            </div>
+                        ) : chat.platform === 'youtube' && !chat.ytVideoId && chat.originalName?.startsWith('@') ? (
+                            <div className="text-center flex flex-col items-center gap-2 opacity-50">
+                                <EyeOffIcon /> <span className="text-xs text-gray-500">Offline ou Não Encontrado</span>
+                            </div>
+                        ) : chat.platform === 'kick' ? (
                             <KickChatEmbed key={refreshKey} streamName={chat.name} />
                         ) : chat.platform === 'twitch' ? (
                             <iframe 
@@ -372,7 +379,7 @@
                         ) : (
                             <iframe 
                                 key={refreshKey}
-                                src={`https://www.youtube.com/live_chat?v=${chat.name}&embed_domain=${hostname}`}
+                                src={`https://www.youtube.com/live_chat?v=${chat.ytVideoId || chat.name}&embed_domain=${hostname}`}
                                 className="w-full h-full border-none"
                                 allow="storage-access-by-user-activation; clipboard-write; web-share; autoplay"
                                 sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-storage-access-by-user-activation"
@@ -417,33 +424,17 @@
         };
 
         const HeroBrand = ({ isVisible }) => {
-            const [isFlipped, setIsFlipped] = useState(false);
-            useEffect(() => { const interval = setInterval(() => setIsFlipped(p => !p), 8000); return () => clearInterval(interval); }, []);
-            
             return (
                 <div className={`logo-container ${isVisible ? 'logo-normal' : 'logo-compact'}`}>
-                     <div className="brand-flip-container">
-                         <div className={`brand-flipper ${isFlipped ? 'flipped' : ''}`}>
-                             <div className="brand-front">
-                                 <div className="multlives-wrapper">
-                                    <div className="w-10 h-10 md:w-12 md:h-12 tech-gradient rounded-xl flex items-center justify-center text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] ring-1 ring-white/20">
-                                        <LogoML />
-                                    </div>
-                                    <div className="flex flex-col text-left">
-                                        <h1 className="font-bold text-xl md:text-2xl tracking-tight text-white leading-none font-display">MULTICHATS</h1>
-                                        <span className="text-[8px] uppercase tracking-[0.3em] text-gray-400 font-semibold mt-1 ml-0.5">Streaming Hub</span>
-                                    </div>
-                                </div>
-                             </div>
-                             <div className="brand-back">
-                                 <h2 className="nevethon-text text-xl md:text-2xl">
-                                     NEVETHON
-                                     <span className="snow-particle" style={{left:'10%',animationDelay:'0s'}}></span>
-                                     <span className="snow-particle" style={{left:'70%',animationDelay:'0.5s'}}></span>
-                                 </h2>
-                             </div>
-                         </div>
-                     </div>
+                     <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 md:w-12 md:h-12 tech-gradient rounded-xl flex items-center justify-center text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] ring-1 ring-white/20">
+                            <LogoML />
+                        </div>
+                        <div className="flex flex-col text-left">
+                            <h1 className="font-bold text-xl md:text-2xl tracking-tight text-white leading-none font-display">MULTICHATS</h1>
+                            <span className="text-[8px] uppercase tracking-[0.3em] text-gray-400 font-semibold mt-1 ml-0.5">Streaming Hub</span>
+                        </div>
+                    </div>
                 </div>
             );
         };
@@ -488,29 +479,54 @@
             const [chats, setChats] = useState([]);
             const [inputVal, setInputVal] = useState("");
             const [platform, setPlatform] = useState("twitch");
-            const [layoutMode, setLayoutMode] = useState("grid"); // 'grid' | 'list'
+            const [layoutMode, setLayoutMode] = useState("grid"); // 'grid' | 'list' | 'focus'
+            const [focusedId, setFocusedId] = useState(null);
             const [isHeaderVisible, setIsHeaderVisible] = useState(true);
             const [showYtWarning, setShowYtWarning] = useState(false);
             const headerTimeoutRef = useRef(null);
 
             // Carregar do localStorage
             useEffect(() => {
-                const saved = localStorage.getItem('nevethon-multichat');
+                const saved = localStorage.getItem('multichats-data');
                 if(saved) {
                     try { setChats(JSON.parse(saved)); } catch(e) {}
                 }
-                const savedLayout = localStorage.getItem('nevethon-layout');
+                const savedLayout = localStorage.getItem('multichats-layout');
                 if(savedLayout) setLayoutMode(savedLayout);
             }, []);
 
             // Salvar no localStorage
             useEffect(() => {
-                localStorage.setItem('nevethon-multichat', JSON.stringify(chats));
+                localStorage.setItem('multichats-data', JSON.stringify(chats));
             }, [chats]);
             
             useEffect(() => {
-                localStorage.setItem('nevethon-layout', layoutMode);
+                localStorage.setItem('multichats-layout', layoutMode);
             }, [layoutMode]);
+
+            // Detecção Inteligente YouTube
+            const checkYTLive = async (handle) => {
+                try {
+                    const clean = handle.replace('@', '');
+                    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(`https://www.youtube.com/@${clean}/streams`)}`;
+                    const res = await fetch(proxyUrl);
+                    const html = await res.text();
+                    const match = html.match(/"BADGE_STYLE_TYPE_LIVE_NOW".*?"videoId":"([a-zA-Z0-9_-]{11})"/);
+                    return match ? match[1] : null;
+                } catch(e) { return null; }
+            };
+
+            // Loop de atualização YT
+            useEffect(() => {
+                const interval = setInterval(async () => {
+                    const ytHandles = chats.filter(c => c.platform === 'youtube' && c.originalName?.startsWith('@'));
+                    for(const chat of ytHandles) {
+                        const liveId = await checkYTLive(chat.originalName);
+                        setChats(prev => prev.map(c => c.id === chat.id ? { ...c, ytVideoId: liveId, isSearching: !liveId } : c));
+                    }
+                }, 60000);
+                return () => clearInterval(interval);
+            }, [chats]);
 
             // Lógica de Ocultar Header (Inatividade)
             useEffect(() => {
@@ -544,26 +560,55 @@
                 };
             }, [chats.length]);
 
-            const addChat = (e) => {
+            const addChat = async (e) => {
                 e.preventDefault();
                 if(!inputVal.trim()) return;
                 
                 let name = inputVal.trim();
+                let originalName = name;
+                let ytVideoId = null;
+                let isSearching = false;
                 
                 if(platform === 'youtube') {
                     const match = name.match(/(?:v=|\/|youtu\.be\/)([0-9A-Za-z_-]{11})/);
-                    if(match) name = match[1];
+                    if(match) {
+                        name = match[1];
+                        ytVideoId = name;
+                        originalName = name;
+                    } else if (/^[a-zA-Z0-9_-]{11}$/.test(name)) {
+                        ytVideoId = name;
+                        originalName = name;
+                    } else {
+                        isSearching = true;
+                        // Adiciona o '@' automaticamente se a pessoa digitou apenas o nome de utilizador
+                        if (!originalName.startsWith('@')) originalName = '@' + originalName;
+                    }
                 } else {
-                    name = name.toLowerCase();
+                    name = name.toLowerCase().replace('@', '');
+                    originalName = name;
                 }
 
-                if(chats.some(c => c.name === name && c.platform === platform)) {
+                if(chats.some(c => (c.name === name || c.originalName === originalName) && c.platform === platform)) {
                     alert("Chat já adicionado!");
                     return;
                 }
 
-                setChats(prev => [...prev, { id: Date.now(), name, platform }]);
+                const newChat = { id: Date.now(), name, originalName, platform, ytVideoId, isSearching };
+                const isFirstChat = chats.length === 0;
+
+                setChats(prev => [...prev, newChat]);
                 setInputVal("");
+
+                // Se for o primeiro chat sendo adicionado, entra direto no modo foco
+                if(isFirstChat) {
+                    setLayoutMode('focus');
+                    setFocusedId(newChat.id);
+                }
+
+                if(isSearching) {
+                    const liveId = await checkYTLive(originalName);
+                    setChats(prev => prev.map(c => c.id === newChat.id ? { ...c, ytVideoId: liveId, isSearching: !liveId } : c));
+                }
             };
             
             const addSuggestion = (name, plat) => {
@@ -573,20 +618,47 @@
                 }
                 
                 if(chats.some(c => c.name === name && c.platform === plat)) return;
-                setChats(prev => [...prev, { id: Date.now(), name, platform: plat }]);
+                
+                const isFirstChat = chats.length === 0;
+                const newChat = { id: Date.now(), name, platform: plat, originalName: name };
+                
+                setChats(prev => [...prev, newChat]);
+
+                if (isFirstChat) {
+                    setLayoutMode('focus');
+                    setFocusedId(newChat.id);
+                }
             };
 
             const confirmYoutubeSuggestion = () => {
                 const name = 'y4tPb3eYiAQ';
                 const plat = 'youtube';
                 if(!chats.some(c => c.name === name && c.platform === plat)) {
-                    setChats(prev => [...prev, { id: Date.now(), name, platform: plat }]);
+                    const isFirstChat = chats.length === 0;
+                    const newChat = { id: Date.now(), name, platform: plat, originalName: name };
+                    setChats(prev => [...prev, newChat]);
+                    
+                    if (isFirstChat) {
+                        setLayoutMode('focus');
+                        setFocusedId(newChat.id);
+                    }
                 }
                 setShowYtWarning(false);
             };
 
             const removeChat = (id) => {
-                setChats(prev => prev.filter(c => c.id !== id));
+                setChats(prev => {
+                    const next = prev.filter(c => c.id !== id);
+                    if (focusedId === id) setFocusedId(next.length > 0 ? next[0].id : null);
+                    
+                    // Se sobrou apenas 1 chat, força o modo foco para manter a intuitividade
+                    if (next.length === 1) {
+                        setLayoutMode('focus');
+                        setFocusedId(next[0].id);
+                    }
+                    
+                    return next;
+                });
             };
 
             return (
@@ -594,12 +666,11 @@
                     
                     {/* Background Effects */}
                     <div className="absolute inset-0 z-0 pointer-events-none">
-                        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-ice/10 blur-[150px] animate-aurora-1 mix-blend-screen"></div>
-                        <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-accent/10 blur-[150px] animate-aurora-2 mix-blend-screen"></div>
-                        <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-150 mix-blend-overlay"></div>
+                        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-[#6366f1]/10 blur-[150px] animate-aurora-1 mix-blend-screen"></div>
+                        <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-[#a5f3fc]/10 blur-[150px] animate-aurora-2 mix-blend-screen"></div>
                     </div>
 
-                    <HeroBrand isVisible={isHeaderVisible} />
+                    <HeroBrand isVisible={isHeaderVisible} isFocusMode={layoutMode === 'focus' && chats.length > 0} />
                     <Credits />
                     
                     <YoutubeWarningModal 
@@ -620,7 +691,7 @@
                                     placeholder={
                                         platform==='twitch' ? "Ex: jonvlogs..." : 
                                         platform==='kick' ? "Ex: adinross..." : 
-                                        "Ex: URL ou ID (y4tPb3eYiAQ)..."
+                                        "Ex: Nome do Canal, URL ou ID..."
                                     } 
                                     className="w-full h-full bg-transparent text-sm px-2 focus:outline-none text-white placeholder-gray-500 font-medium"
                                 />
@@ -652,12 +723,18 @@
                                 >
                                     <ListIcon /> <span className="text-[10px] uppercase">Vert</span>
                                 </button>
+                                <button 
+                                    onClick={() => { setLayoutMode('focus'); if(!focusedId && chats.length>0) setFocusedId(chats[0].id); }}
+                                    className={`p-1.5 rounded-full transition-all flex items-center gap-1.5 px-3 ${layoutMode === 'focus' ? 'bg-white text-black font-bold' : 'text-gray-400 hover:text-white'}`}
+                                >
+                                    <FocusIcon /> <span className="text-[10px] uppercase">Foco</span>
+                                </button>
                             </div>
                         )}
                     </div>
 
                     {/* Chat Container */}
-                    <div className={`chat-container scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent ${layoutMode === 'grid' ? 'mode-grid' : 'mode-list'} ${!isHeaderVisible && chats.length > 0 ? 'full-view' : ''}`}>
+                    <div className={`chat-container scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent ${layoutMode === 'grid' ? 'mode-grid' : layoutMode === 'list' ? 'mode-list' : 'mode-focus'} ${!isHeaderVisible && chats.length > 0 ? 'full-view' : ''}`}>
                         {chats.length === 0 && (
                             <div className="flex flex-col items-center justify-center text-center opacity-40 mt-32 h-full w-full">
                                 <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 animate-pulse-glow">
@@ -668,9 +745,35 @@
                             </div>
                         )}
                         {chats.map(chat => (
-                            <ChatCard key={chat.id} chat={chat} onRemove={removeChat} />
+                            <ChatCard 
+                                key={chat.id} 
+                                chat={chat} 
+                                onRemove={removeChat}
+                                isHidden={layoutMode === 'focus' && focusedId !== chat.id}
+                                isFocused={layoutMode === 'focus' && focusedId === chat.id}
+                                onFocus={(id) => { setLayoutMode('focus'); setFocusedId(id); }}
+                            />
                         ))}
                     </div>
+
+                    {/* Dock Inferior para Modo Foco */}
+                    {layoutMode === 'focus' && chats.length > 1 && (
+                        <div className={`bottom-dock ${!isHeaderVisible ? 'dock-hidden' : ''}`}>
+                            {chats.map(c => (
+                                <button 
+                                    key={c.id} 
+                                    onClick={() => setFocusedId(c.id)} 
+                                    className={`relative flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs transition-all ${focusedId === c.id ? 'bg-white text-black scale-105 shadow-xl' : 'bg-transparent text-gray-400 hover:text-white hover:bg-white/10'}`}
+                                >
+                                    <span className={focusedId === c.id ? 'text-black' : getPlatformColor(c.platform)}>
+                                        {c.platform === 'twitch' ? <TwitchIcon width={14} height={14}/> : c.platform === 'kick' ? <span className="font-bold text-[10px]">K</span> : <YoutubeIcon width={14} height={14}/>}
+                                    </span>
+                                    <span className="truncate max-w-[100px]">{c.originalName || c.name}</span>
+                                    {c.platform === 'youtube' && c.isSearching && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#6366f1] rounded-full animate-ping"></span>}
+                                </button>
+                            ))}
+                        </div>
+                    )}
 
                 </div>
             );
