@@ -5,22 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <!-- SEO & Meta Tags -->
-    <meta name="description" content="Multichat Ultimate: Acompanhe múltiplos chats de streamers da Twitch, Kick e YouTube simultaneamente. Ferramenta ideal para moderadores e fãs com layout responsivo e modo noturno.">
-    <meta name="keywords" content="multichat, twitch chat, kick chat, youtube live chat, multistream, chat viewer, stream tools, moderador chat">
+    <meta name="description" content="Multichat Ultimate: Acompanhe múltiplos chats de streamers da Twitch, Kick e YouTube simultaneamente.">
     <meta name="author" content="KaozyKing">
-    <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#09090b">
-
-    <!-- Open Graph / Social (Facebook, Discord, WhatsApp) -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Multichat Ultimate">
-    <meta property="og:description" content="Visualize e interaja com vários chats de live stream ao mesmo tempo. Suporte para Twitch, Kick e YouTube em um único lugar.">
-    <meta property="og:site_name" content="Multichat Ultimate">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Multichat Ultimate">
-    <meta property="twitter:description" content="Acompanhe múltiplos chats de streamers da Twitch, Kick e YouTube simultaneamente.">
 
     <title>Multichat Ultimate</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'><path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' stroke='%23a5f3fc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>">
@@ -40,35 +27,31 @@
                 extend: {
                     fontFamily: {
                         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        display: ['"Inter"', 'sans-serif'],
-                        russo: ['"Russo One"', 'sans-serif'],
-                        mono: ['"Share Tech Mono"', 'monospace']
+                        display: ['"Inter"', 'sans-serif']
                     },
                     colors: {
                         background: '#09090b',
                         surface: '#121215',
-                        surfaceHighlight: '#1e1e24',
                         accent: '#6366f1',
-                        accentHover: '#4f46e5',
                         ice: '#a5f3fc',
-                        kick: '#53fc18'
+                        kick: '#53fc18',
+                        twitch: '#9146ff',
+                        yt: '#ff0000'
                     },
                     animation: {
                         'aurora-1': 'aurora 20s infinite alternate',
                         'aurora-2': 'aurora 25s infinite alternate-reverse',
-                        'toast-in': 'toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                         'slide-up': 'slideUp 0.3s ease-out forwards',
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
                         'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
-                        'blizzard': 'blizzard 5s linear infinite',
-                        'fade-in': 'fadeIn 0.5s ease-out forwards'
+                        'modal-enter': 'modalEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards'
                     },
                     keyframes: {
                         aurora: { '0%': { transform: 'translate(0, 0) rotate(0deg)' }, '100%': { transform: 'translate(10%, 10%) rotate(10deg)' } },
-                        toastIn: { '0%': { transform: 'translateX(100%)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } },
                         slideUp: { '0%': { transform: 'translateY(100%)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+                        fadeIn: { 'from': { opacity: '0' }, 'to': { opacity: '1' } },
                         pulseGlow: { '0%, 100%': { opacity: '0.6', filter: 'brightness(1)' }, '50%': { opacity: '1', filter: 'brightness(1.5) blur(1px)' } },
-                        blizzard: { '0%': { transform: 'translate(0, 0) rotate(0deg)' }, '100%': { transform: 'translate(-20px, 100vh) rotate(360deg)' } },
-                        fadeIn: { 'from': { opacity: '0', transform: 'translateY(10px)' }, 'to': { opacity: '1', transform: 'translateY(0)' } }
+                        modalEnter: { '0%': { opacity: '0', transform: 'scale(0.95) translateY(10px)' }, '100%': { opacity: '1', transform: 'scale(1) translateY(0)' } }
                     }
                 }
             }
@@ -81,46 +64,26 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.2); }
         
-        /* Glass UI */
-        .glass-panel { background: rgba(18,18,21,0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
-        
-        /* Header Dynamics */
-        .header-container {
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Floating Nav Bar */
+        .dynamic-island {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 60;
-            padding: 1rem;
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
+            top: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 70;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 95vw;
         }
 
-        .header-hidden {
-            transform: translateY(-120%);
+        .island-hidden {
+            transform: translate(-50%, -150%);
             opacity: 0;
             pointer-events: none;
         }
 
-        .command-bar {
-            background: rgba(18,18,21,.85);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255,255,255,.08);
-            border-radius: 999px;
-            box-shadow: 0 10px 40px rgba(0,0,0,.3);
-            padding: 0.35rem 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            height: 3.5rem;
-            width: 100%;
-            max-width: 800px;
-            transition: all 0.3s ease;
-        }
-        
         /* Logo Positioning */
         .logo-container {
             position: fixed;
@@ -132,121 +95,54 @@
             transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
             pointer-events: none;
         }
-
-        /* Estado Normal: Logo abaixo do Header */
-        .logo-normal {
-            top: 6rem; /* Empurrado para baixo */
-            transform: scale(1);
-            opacity: 1;
-        }
-
-        /* Estado Oculto: Header sobe, Logo sobe e diminui */
-        .logo-compact {
-            top: 1.5rem;
-            transform: scale(0.7);
-            opacity: 0.8;
-        }
+        .logo-normal { top: 6rem; transform: scale(1); opacity: 1; }
+        .logo-compact { top: 1.5rem; transform: scale(0.7); opacity: 0.8; }
+        .logo-hidden { top: -5rem; transform: scale(0.5); opacity: 0; pointer-events: none; }
 
         /* Grid Modes */
         .chat-container { 
             padding: 0 1rem 1rem 1rem; 
-            height: 100vh; 
+            height: 100dvh; 
             width: 100vw; 
-            /* Padding top dinâmico via JS ou CSS fixo grande o suficiente */
-            padding-top: 10rem; 
-            transition: padding-top 0.5s ease;
+            padding-top: 5.5rem; /* Espaço perfeito para a barra flutuante */
+            transition: padding-top 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             box-sizing: border-box;
         }
-        
-        .chat-container.full-view {
-            padding-top: 5rem; /* Menos padding quando o header some */
-        }
-        
-        /* MODE GRID: Chats side-by-side (columns), full height */
-        .mode-grid {
-            display: flex;
-            flex-direction: row;
-            overflow-x: auto; /* Scroll horizontal se necessário */
-            overflow-y: hidden; /* Scroll vertical dentro do chat apenas */
-            gap: 1rem;
-            align-items: stretch; /* Estica altura */
-        }
 
-        /* MODE LIST: Stacked vertically */
-        .mode-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            max-width: 800px;
-            margin: 0 auto;
-            overflow-y: auto; /* Container rola */
+        .chat-container.full-view {
+            padding-top: max(0.5rem, env(safe-area-inset-top)); /* Espacinho de respiro inteligente quando oculta */
         }
         
-        /* Focus Mode Classes */
-        .mode-focus { display: flex; flex-direction: column; overflow: hidden; padding: 0 !important; }
+        .mode-grid { display: flex; flex-direction: row; overflow-x: auto; overflow-y: hidden; gap: 1rem; align-items: stretch; }
+        .mode-list { display: flex; flex-direction: column; gap: 1.5rem; max-width: 800px; margin: 0 auto; overflow-y: auto; }
+        
+        /* Agora preservamos o padding do topo, removendo apenas as margens laterais e inferiores para imersão */
+        .mode-focus { display: flex; flex-direction: column; overflow: hidden; padding-bottom: 0; padding-left: 0; padding-right: 0; }
+        
         .chat-hidden { position: absolute !important; opacity: 0 !important; pointer-events: none !important; width: 1px !important; height: 1px !important; z-index: -1 !important; transform: scale(0.01); }
         .chat-focused { flex: 1; width: 100%; height: 100%; max-height: 100%; border-radius: 0; border: none; }
         
-        /* Bottom Dock */
-        .bottom-dock { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 70; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; padding: 0.5rem; border-radius: 99px; background: rgba(18,18,21,0.85); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 40px rgba(0,0,0,0.5); transition: all 0.5s ease; width: max-content; max-width: 90vw; }
-        .dock-hidden { transform: translate(-50%, 150%); opacity: 0; pointer-events: none; }
-        
         .chat-card {
-            display: flex;
-            flex-direction: column;
-            background: #0b0e11;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            transition: all 0.3s ease;
+            display: flex; flex-direction: column; background: #0b0e11;
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+            overflow: hidden; position: relative; transition: all 0.3s ease;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
         
-        /* Grid Mode Card: Full Height, Flex width */
-        .mode-grid .chat-card {
-            flex: 1;
-            min-width: 320px; /* Largura mínima para leitura */
-            height: 100%; /* Ocupa altura total do container */
-            max-height: 100%;
-        }
-
-        /* List Mode Card: Fixed height */
-        .mode-list .chat-card {
-            height: 600px;
-            flex-shrink: 0;
-        }
-
+        .mode-grid .chat-card { flex: 1; min-width: 320px; height: 100%; max-height: 100%; }
+        .mode-list .chat-card { height: 600px; flex-shrink: 0; }
         .chat-card:hover { border-color: rgba(165,243,252,0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
         .tech-gradient { background: linear-gradient(135deg, #6366f1 0%, #a5f3fc 100%); }
 
-        /* Mobile Specifics */
         @media (max-width: 768px) {
-            .header-container { padding: 0.5rem; width: 100%; gap: 0.5rem; }
-            .command-bar { height: 3.2rem; padding: 0.25rem; }
-            .chat-container { padding-top: 11rem; }
-            .chat-container.full-view { padding-top: 6rem; }
-            
-            /* Em mobile, Grid vira lista horizontal deslizante */
-            .mode-grid { flex-direction: column; overflow-x: hidden; overflow-y: auto; } /* Força vertical em mobile por usabilidade */
+            .dynamic-island { top: max(1rem, env(safe-area-inset-top)); }
+            .mode-grid { flex-direction: column; overflow-x: hidden; overflow-y: auto; }
             .mode-grid .chat-card { min-width: 100%; height: 60vh; margin-bottom: 1rem; }
-
             .mode-list .chat-card { height: 60vh; }
-            
-            /* Logo adjustments for mobile */
             .logo-normal { top: 4.5rem; transform: scale(0.85); }
-            .logo-compact { top: 1rem; transform: scale(0.6); }
-            
-            /* Input font size for iOS zoom prevention */
-            input, select, textarea { font-size: 16px !important; }
+            input { font-size: 16px !important; }
         }
-
-        /* Desktop Override to enforce side-by-side on large screens */
-        @media (min-width: 769px) {
-            .mode-grid { flex-direction: row; }
-            .mode-grid .chat-card { height: 100%; }
-        }
+        @media (min-width: 769px) { .mode-grid { flex-direction: row; } .mode-grid .chat-card { height: 100%; } }
     </style>
 </head>
 <body>
@@ -257,9 +153,10 @@
 
         // --- Icons ---
         const XIcon = ({size=16}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
-        const PlusIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
+        const PlusIcon = ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
         const TwitchIcon = ({width=16, height=16}) => <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>;
-        const YoutubeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>;
+        const YoutubeIcon = ({width=16, height=16}) => <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>;
+        const KickIcon = ({width=16, height=16}) => <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="currentColor"><path d="M14.615 13.923l4.385 5.538h-4.308l-3.385-4.462h-1.615v4.462H5v-14h4.692v4.846h1.615l3.23-4.846h4.385l-4.307 5.385z"/></svg>;
         const TrashIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>;
         const ExternalLinkIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>;
         const RefreshIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M3 21v-5h5"></path></svg>;
@@ -267,67 +164,131 @@
         const LogoML = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 19V5" stroke="white" strokeWidth="3" strokeLinecap="round" /><path d="M19 19V5" stroke="white" strokeWidth="3" strokeLinecap="round" /><path d="M5 5L12 13L19 5" stroke="#a5f3fc" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>;
         const GridIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>;
         const ListIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>;
-        const InstagramIcon = ({width,height}) => <svg xmlns="http://www.w3.org/2000/svg" width={width||16} height={height||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>;
-        const AlertCircleIcon = ({size=16}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>;
         const FocusIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3h18v18H3z"></path><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>;
         const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
         const EyeOffIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>;
+        const ChevronDownIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>;
+        const AlertCircleIcon = ({size=16}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>;
 
-        // --- Helpers ---
-        const getPlatformColor = p => p==='twitch'?'text-[#9146ff]':p==='kick'?'text-[#53fc18]':p==='youtube'?'text-[#ff0000]':'text-white';
         const hostname = typeof window!=='undefined' && window.location.hostname ? window.location.hostname : "localhost";
 
-        // --- Components ---
-        
-        const KickChatEmbed = ({ streamName }) => {
-            const [status, setStatus] = useState('warning');
-            const [showNativeHint, setShowNativeHint] = useState(true);
+        // --- Configuração das Plataformas ---
+        const PLATFORMS = {
+            twitch: { id: 'twitch', name: 'Twitch', color: 'text-[#9146ff]', bg: 'bg-[#9146ff]', border: 'border-[#9146ff]', icon: <TwitchIcon width={16} height={16}/>, placeholder: 'Ex: alanzoka...' },
+            kick: { id: 'kick', name: 'Kick', color: 'text-[#53fc18]', bg: 'bg-[#53fc18]', border: 'border-[#53fc18]', icon: <KickIcon width={16} height={16}/>, placeholder: 'Ex: paulinholoko...' },
+            youtube: { id: 'youtube', name: 'YouTube', color: 'text-[#ff0000]', bg: 'bg-[#ff0000]', border: 'border-[#ff0000]', icon: <YoutubeIcon width={16} height={16}/>, placeholder: 'Ex: @NomeDoCanal, URL ou ID' }
+        };
+
+        // --- Modais ---
+        const AddChatModal = ({ isOpen, onClose, onAdd }) => {
+            const [platform, setPlatform] = useState('twitch');
+            const [inputVal, setInputVal] = useState('');
+
+            useEffect(() => {
+                if (isOpen) { setInputVal(''); }
+            }, [isOpen]);
+
+            if (!isOpen) return null;
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if(inputVal.trim()) {
+                    onAdd(platform, inputVal);
+                }
+            };
 
             return (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in" onMouseDown={(e) => {if(e.target === e.currentTarget) onClose()}}>
+                    <div className="bg-[#121215] border border-white/10 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-modal-enter flex flex-col">
+                        <div className="p-4 border-b border-white/5 flex items-center justify-between">
+                            <h2 className="text-white font-bold text-lg flex items-center gap-2">
+                                <PlusIcon size={18}/> Adicionar Novo Chat
+                            </h2>
+                            <button onClick={onClose} className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                                <XIcon size={18} />
+                            </button>
+                        </div>
+                        
+                        <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-5">
+                            {/* Seleção de Plataforma */}
+                            <div className="grid grid-cols-3 gap-2">
+                                {Object.values(PLATFORMS).map(p => (
+                                    <button 
+                                        key={p.id} type="button" onClick={() => setPlatform(p.id)}
+                                        className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${platform === p.id ? `${p.bg}/20 ${p.border} ${p.color}` : 'border-white/5 bg-white/5 text-gray-500 hover:text-gray-300 hover:bg-white/10'}`}
+                                    >
+                                        <div className="mb-1">{p.icon}</div>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider">{p.name}</span>
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Input Area */}
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-[10px] font-bold uppercase text-gray-500 tracking-wider">Usuário ou Link da {PLATFORMS[platform].name}</label>
+                                <input 
+                                    type="text" autoFocus value={inputVal} onChange={e => setInputVal(e.target.value)}
+                                    placeholder={PLATFORMS[platform].placeholder}
+                                    className={`w-full bg-black/50 border ${platform==='twitch'?'focus:border-[#9146ff]':platform==='kick'?'focus:border-[#53fc18]':'focus:border-[#ff0000]'} border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none transition-colors font-medium`}
+                                />
+                            </div>
+
+                            <button type="submit" className={`w-full py-3 rounded-xl font-bold text-white shadow-lg transition-transform active:scale-95 ${PLATFORMS[platform].bg}`}>
+                                Adicionar à Tela
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
+
+        const YoutubeWarningModal = ({ isOpen, onClose, onConfirm }) => {
+            if (!isOpen) return null;
+            return (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-[#1a1d21] border border-[#ff0000]/30 rounded-xl shadow-2xl max-w-md w-full overflow-hidden animate-slide-up">
+                        <div className="p-5 flex flex-col gap-4">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 rounded-full bg-[#ff0000]/10 flex items-center justify-center text-[#ff0000] shrink-0 border border-[#ff0000]/20">
+                                    <AlertCircleIcon size={24} />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-white font-bold text-lg mb-1">Atenção: YouTube Chat</h3>
+                                    <p className="text-gray-400 text-xs leading-relaxed">
+                                        Para chats do YouTube, é necessário usar o <strong>ID ou Link da transmissão</strong> que está acontecendo AO VIVO agora.
+                                        <br/><br/>
+                                        Este botão adicionará apenas um exemplo. Se der erro, cole o link da live atual ou digite @NomeDoCanal.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex gap-3 mt-2">
+                                <button onClick={onClose} className="flex-1 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-bold rounded-lg transition-colors">Cancelar</button>
+                                <button onClick={onConfirm} className="flex-1 px-4 py-2.5 bg-[#ff0000] hover:bg-[#d00000] text-white text-xs font-bold rounded-lg shadow-lg shadow-red-900/20 transition-colors">Entendi, adicionar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Core Components ---
+        const KickChatEmbed = ({ streamName }) => {
+            const [status, setStatus] = useState('loaded');
+            return (
                 <div className="w-full h-full relative group/kick bg-[#0b0e11] flex flex-col overflow-hidden">
-                    {status==='warning' && (
-                        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#0b0e11] p-6 text-center animate-fade-in">
-                            <div className="w-10 h-10 bg-[#53fc18]/20 rounded-full flex items-center justify-center mb-3 border border-[#53fc18]">
-                                <span className="text-[#53fc18] font-bold text-lg">!</span>
-                            </div>
-                            <h3 className="text-white font-bold text-sm mb-1">Proteção de Cookies</h3>
-                            <p className="text-gray-400 text-xs max-w-xs mb-3">Se o chat não carregar, use a opção "Janela Nativa".</p>
-                            <button onClick={() => setStatus('loaded')} className="bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded-lg transition-colors">Carregar Mesmo Assim</button>
-                        </div>
-                    )}
-                    {status==='loaded' && (
-                        <iframe 
-                            src={`https://kick.com/popout/${streamName}/chat`} 
-                            className="w-full h-full border-none bg-[#0b0e11]" 
-                            referrerPolicy="no-referrer"
-                            allow="storage-access-by-user-activation; clipboard-write; web-share"
-                            sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-storage-access-by-user-activation"
-                        ></iframe>
-                    )}
-                    {status==='loaded' && showNativeHint && (
-                        <div className="absolute bottom-2 left-2 right-2 bg-[#1a1d21] border border-[#53fc18]/30 rounded-lg p-3 shadow-2xl flex items-center justify-between animate-fade-in z-40">
-                            <span className="text-[10px] text-gray-300">Problemas?</span>
-                            <div className="flex gap-2">
-                                <button onClick={() => { window.open(`https://kick.com/popout/${streamName}/chat`, `kick_chat_${streamName}`, "width=400,height=600"); setShowNativeHint(false); }} className="text-[#53fc18] text-[10px] font-bold hover:underline">Abrir Popout</button>
-                                <button onClick={() => setShowNativeHint(false)}><XIcon size={12} /></button>
-                            </div>
-                        </div>
-                    )}
+                    <iframe 
+                        src={`https://kick.com/popout/${streamName}/chat`} 
+                        className="w-full h-full border-none bg-[#0b0e11]" 
+                        referrerPolicy="no-referrer"
+                        allow="storage-access-by-user-activation; clipboard-write; web-share"
+                        sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-storage-access-by-user-activation"
+                    ></iframe>
                 </div>
             );
         };
 
         const ChatCard = ({ chat, onRemove, isHidden, isFocused, onFocus }) => {
             const [refreshKey, setRefreshKey] = useState(0);
-
-            const handlePopout = () => {
-                let url = "";
-                if(chat.platform === 'twitch') url = `https://www.twitch.tv/popout/${chat.name}/chat`;
-                else if(chat.platform === 'kick') url = `https://kick.com/popout/${chat.name}/chat`;
-                else if(chat.platform === 'youtube') url = `https://www.youtube.com/live_chat?v=${chat.ytVideoId || chat.name}`;
-                
-                window.open(url, `chat-${chat.id}`, "width=400,height=600");
-            };
 
             const getTwitchUrl = (name) => {
                 const parents = [hostname, 'localhost', '127.0.0.1'];
@@ -336,27 +297,27 @@
                 return `https://www.twitch.tv/embed/${name}/chat?${parentQuery}&darkpopout`;
             };
 
+            const pColor = PLATFORMS[chat.platform].color;
+            const pIcon = PLATFORMS[chat.platform].icon;
+
             return (
                 <div className={`chat-card group animate-slide-up ${isHidden ? 'chat-hidden' : ''} ${isFocused ? 'chat-focused' : ''}`}>
-                    {/* Header do Card */}
                     <div className="h-10 bg-[#121215] border-b border-white/5 flex items-center justify-between px-3 shrink-0 z-20">
                         <div className="flex items-center gap-2">
-                            <div className={`flex items-center justify-center w-5 h-5 rounded bg-white/5 ${getPlatformColor(chat.platform)}`}>
-                                {chat.platform === 'twitch' && <TwitchIcon />}
-                                {chat.platform === 'kick' && <span className="text-[10px] font-bold">K</span>}
-                                {chat.platform === 'youtube' && <YoutubeIcon />}
-                            </div>
+                            <div className={`flex items-center justify-center w-5 h-5 rounded bg-white/5 ${pColor}`}>{pIcon}</div>
                             <span className="text-sm font-bold text-white tracking-tight truncate max-w-[120px] md:max-w-[150px]">{chat.originalName || chat.name}</span>
                         </div>
                         <div className="flex items-center gap-1 opacity-100 md:opacity-60 md:group-hover:opacity-100 transition-opacity">
                             <button onClick={() => setRefreshKey(k => k + 1)} className="p-1.5 hover:text-white hover:bg-white/10 rounded" title="Recarregar"><RefreshIcon /></button>
-                            <button onClick={handlePopout} className="p-1.5 hover:text-ice hover:bg-white/10 rounded" title="Popout (Janela)"><ExternalLinkIcon /></button>
+                            <button onClick={() => {
+                                let url = chat.platform === 'twitch' ? `https://www.twitch.tv/popout/${chat.name}/chat` : chat.platform === 'kick' ? `https://kick.com/popout/${chat.name}/chat` : `https://www.youtube.com/live_chat?v=${chat.ytVideoId || chat.name}`;
+                                window.open(url, `chat-${chat.id}`, "width=400,height=600");
+                            }} className="p-1.5 hover:text-ice hover:bg-white/10 rounded" title="Popout (Janela)"><ExternalLinkIcon /></button>
                             {!isFocused && <button onClick={() => onFocus(chat.id)} className="p-1.5 hover:text-accent hover:bg-white/10 rounded hidden md:block" title="Focar"><FocusIcon /></button>}
                             <button onClick={() => onRemove(chat.id)} className="p-1.5 text-red-400 hover:bg-red-500/10 rounded ml-1" title="Fechar"><TrashIcon /></button>
                         </div>
                     </div>
                     
-                    {/* Conteúdo do Chat */}
                     <div className="flex-1 relative bg-[#09090b] flex items-center justify-center">
                         {chat.platform === 'youtube' && chat.isSearching ? (
                             <div className="text-center animate-pulse-glow flex flex-col items-center gap-2 opacity-50">
@@ -369,63 +330,21 @@
                         ) : chat.platform === 'kick' ? (
                             <KickChatEmbed key={refreshKey} streamName={chat.name} />
                         ) : chat.platform === 'twitch' ? (
-                            <iframe 
-                                key={refreshKey}
-                                src={getTwitchUrl(chat.name)}
-                                className="w-full h-full border-none"
-                                allow="storage-access-by-user-activation; clipboard-write; web-share"
-                                sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-storage-access-by-user-activation allow-modals"
-                            ></iframe>
+                            <iframe key={refreshKey} src={getTwitchUrl(chat.name)} className="w-full h-full border-none" allow="storage-access-by-user-activation; clipboard-write; web-share" sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-storage-access-by-user-activation allow-modals"></iframe>
                         ) : (
-                            <iframe 
-                                key={refreshKey}
-                                src={`https://www.youtube.com/live_chat?v=${chat.ytVideoId || chat.name}&embed_domain=${hostname}`}
-                                className="w-full h-full border-none"
-                                allow="storage-access-by-user-activation; clipboard-write; web-share; autoplay"
-                                sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-storage-access-by-user-activation"
-                            ></iframe>
+                            <iframe key={refreshKey} src={`https://www.youtube.com/live_chat?v=${chat.ytVideoId || chat.name}&embed_domain=${hostname}`} className="w-full h-full border-none" allow="storage-access-by-user-activation; clipboard-write; web-share; autoplay" sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-storage-access-by-user-activation"></iframe>
                         )}
                     </div>
                 </div>
             );
         };
 
-        const PlatformSelector = ({ selected, onSelect }) => (
-            <div className="flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/5 shrink-0">
-                {[
-                    {id:'twitch', bg:'bg-[#9146ff]', icon:<TwitchIcon/>},
-                    {id:'kick', bg:'bg-[#53fc18]', icon:<span className="font-bold text-[10px]">K</span>},
-                    {id:'youtube', bg:'bg-[#ff0000]', icon:<YoutubeIcon/>}
-                ].map(p => (
-                    <button 
-                        key={p.id} 
-                        type="button" 
-                        onClick={() => onSelect(p.id)} 
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${selected===p.id ? `${p.bg} text-black shadow-lg scale-110` : 'text-gray-500 hover:text-white hover:bg-white/10'}`}
-                    >
-                        {p.icon}
-                    </button>
-                ))}
-            </div>
-        );
+        const HeroBrand = ({ isVisible, hasChats }) => {
+            let logoClass = 'logo-normal';
+            if (hasChats) logoClass = isVisible ? 'logo-compact' : 'logo-hidden';
 
-        const Credits = () => {
             return (
-                <div className={`fixed z-[60] flex items-center gap-2 transition-all duration-700 ease-out group/credits bottom-4 right-4 opacity-50 hover:opacity-100`}>
-                    <div className={`flex items-center gap-2 overflow-hidden transition-all duration-500 w-0 opacity-0 group-hover/credits:w-auto group-hover/credits:opacity-100`}>
-                        <a href="https://www.twitch.tv/kaozyking" target="_blank" className="p-1.5 bg-[#9146ff] text-white rounded-full hover:scale-110 transition-transform shadow-lg"><TwitchIcon width={12} height={12}/></a>
-                        <a href="https://www.instagram.com/oeduardomacedo" target="_blank" className="p-1.5 bg-pink-600 text-white rounded-full hover:scale-110 transition-transform shadow-lg"><InstagramIcon width={12} height={12}/></a>
-                    </div>
-                    <div className="px-2 py-1 bg-black/40 backdrop-blur-md border border-white/5 rounded-full text-[10px] font-medium text-gray-400 group-hover/credits:text-white group-hover/credits:bg-black/80 transition-colors shadow-xl cursor-default">
-                        Dev by <span className="font-bold text-ice">KaozyKing</span>
-                    </div>
-                </div>
-            )
-        };
-
-        const HeroBrand = ({ isVisible }) => {
-            return (
-                <div className={`logo-container ${isVisible ? 'logo-normal' : 'logo-compact'}`}>
+                <div className={`logo-container ${logoClass}`}>
                      <div className="flex items-center gap-3">
                         <div className="w-10 h-10 md:w-12 md:h-12 tech-gradient rounded-xl flex items-center justify-center text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] ring-1 ring-white/20">
                             <LogoML />
@@ -439,132 +358,105 @@
             );
         };
 
-        const YoutubeWarningModal = ({ isOpen, onClose, onConfirm }) => {
-            if (!isOpen) return null;
-            return (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-[#1a1d21] border border-[#ff0000]/30 rounded-xl shadow-2xl max-w-md w-full overflow-hidden animate-slide-up">
-                        <div className="p-5 flex flex-col gap-4">
-                            <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 rounded-full bg-[#ff0000]/10 flex items-center justify-center text-[#ff0000] shrink-0 border border-[#ff0000]/20">
-                                    <AlertCircleIcon size={24} />
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="text-white font-bold text-lg mb-1">Atenção: YouTube Chat</h3>
-                                    <p className="text-gray-400 text-xs leading-relaxed">
-                                        Para chats do YouTube, é necessário usar o <strong>ID ou Link da transmissão</strong> que está acontecendo AO VIVO agora.
-                                        <br/><br/>
-                                        Este botão adicionará apenas um <strong>exemplo de vídeo antigo</strong>.
-                                        <br/><br/>
-                                        Se der erro ou o chat não carregar, cole o link da live atual na barra de pesquisa e selecione o ícone do YouTube.
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex gap-3 mt-2">
-                                <button onClick={onClose} className="flex-1 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-bold rounded-lg transition-colors">
-                                    Cancelar
-                                </button>
-                                <button onClick={onConfirm} className="flex-1 px-4 py-2.5 bg-[#ff0000] hover:bg-[#d00000] text-white text-xs font-bold rounded-lg shadow-lg shadow-red-900/20 transition-colors">
-                                    Entendi, adicionar exemplo
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
         // --- Main App ---
         const App = () => {
             const [chats, setChats] = useState([]);
-            const [inputVal, setInputVal] = useState("");
-            const [platform, setPlatform] = useState("twitch");
-            const [layoutMode, setLayoutMode] = useState("grid"); // 'grid' | 'list' | 'focus'
+            const [layoutMode, setLayoutMode] = useState("grid");
             const [focusedId, setFocusedId] = useState(null);
-            const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+            
+            const [isNavVisible, setIsNavVisible] = useState(true);
+            const [isHoveringNav, setIsHoveringNav] = useState(false);
+            
+            const [isAddModalOpen, setIsAddModalOpen] = useState(false);
             const [showYtWarning, setShowYtWarning] = useState(false);
-            const headerTimeoutRef = useRef(null);
+            const navTimeoutRef = useRef(null);
 
             // Carregar do localStorage
             useEffect(() => {
                 const saved = localStorage.getItem('multichats-data');
-                if(saved) {
-                    try { setChats(JSON.parse(saved)); } catch(e) {}
-                }
+                if(saved) { try { setChats(JSON.parse(saved)); } catch(e) {} }
                 const savedLayout = localStorage.getItem('multichats-layout');
                 if(savedLayout) setLayoutMode(savedLayout);
             }, []);
 
-            // Salvar no localStorage
-            useEffect(() => {
-                localStorage.setItem('multichats-data', JSON.stringify(chats));
-            }, [chats]);
-            
-            useEffect(() => {
-                localStorage.setItem('multichats-layout', layoutMode);
-            }, [layoutMode]);
+            useEffect(() => { localStorage.setItem('multichats-data', JSON.stringify(chats)); }, [chats]);
+            useEffect(() => { localStorage.setItem('multichats-layout', layoutMode); }, [layoutMode]);
 
-            // Detecção Inteligente YouTube
-            const checkYTLive = async (handle) => {
-                try {
-                    const clean = handle.replace('@', '');
-                    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(`https://www.youtube.com/@${clean}/streams`)}`;
-                    const res = await fetch(proxyUrl);
-                    const html = await res.text();
-                    const match = html.match(/"BADGE_STYLE_TYPE_LIVE_NOW".*?"videoId":"([a-zA-Z0-9_-]{11})"/);
-                    return match ? match[1] : null;
-                } catch(e) { return null; }
+            // Forçar ocultação
+            const forceHideNav = () => {
+                setIsNavVisible(false);
+                if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
             };
 
-            // Loop de atualização YT
+            // YouTube Auto-Discovery
+            const checkYTLive = async (handle) => {
+                const clean = handle.replace('@', '');
+                try {
+                    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.youtube.com/@${clean}/live`)}`;
+                    const res = await fetch(proxyUrl);
+                    const data = await res.json();
+                    if (data.contents && (data.contents.includes('"isLiveBroadcast":true') || data.contents.includes('BADGE_STYLE_TYPE_LIVE_NOW'))) {
+                        const canonicalMatch = data.contents.match(/<link rel="canonical" href="https:\/\/www.youtube.com\/watch\?v=([a-zA-Z0-9_-]{11})"/);
+                        const videoIdMatch = data.contents.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+                        if (canonicalMatch && canonicalMatch[1]) return canonicalMatch[1];
+                        if (videoIdMatch && videoIdMatch[1]) return videoIdMatch[1];
+                    }
+                } catch(e) {}
+                try {
+                    const fallbackUrl = `https://corsproxy.io/?${encodeURIComponent(`https://www.youtube.com/@${clean}/streams`)}`;
+                    const res2 = await fetch(fallbackUrl);
+                    const html2 = await res2.text();
+                    const match2 = html2.match(/"BADGE_STYLE_TYPE_LIVE_NOW".*?"videoId":"([a-zA-Z0-9_-]{11})"/);
+                    if (match2 && match2[1]) return match2[1];
+                } catch(e) {}
+                return null;
+            };
+
             useEffect(() => {
                 const interval = setInterval(async () => {
                     const ytHandles = chats.filter(c => c.platform === 'youtube' && c.originalName?.startsWith('@'));
                     for(const chat of ytHandles) {
                         const liveId = await checkYTLive(chat.originalName);
-                        setChats(prev => prev.map(c => c.id === chat.id ? { ...c, ytVideoId: liveId, isSearching: !liveId } : c));
+                        setChats(prev => prev.map(c => c.id === chat.id ? { ...c, ytVideoId: liveId, isSearching: false } : c));
                     }
                 }, 60000);
                 return () => clearInterval(interval);
             }, [chats]);
 
-            // Lógica de Ocultar Header (Inatividade)
+            // Sistema Auto-Ocultar (Smart Dynamic Island)
             useEffect(() => {
-                const showHeader = () => {
-                    setIsHeaderVisible(true);
-                    if (headerTimeoutRef.current) clearTimeout(headerTimeoutRef.current);
-                    
-                    // Só agenda para esconder se tiver chats (se não tiver, deixa fixo para instrução)
-                    if (chats.length > 0) {
-                        headerTimeoutRef.current = setTimeout(() => {
-                            setIsHeaderVisible(false);
-                        }, 2500);
-                    }
+                if (chats.length === 0 || isAddModalOpen) {
+                    setIsNavVisible(true);
+                    return;
+                }
+                if (isHoveringNav) {
+                    setIsNavVisible(true);
+                    if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
+                    return;
+                }
+
+                const handleMouseMove = (e) => {
+                    if (e.clientY < 90) { setIsNavVisible(true); startTimeout(); }
                 };
 
-                // Eventos
-                window.addEventListener('mousemove', showHeader);
-                window.addEventListener('touchstart', showHeader);
-                window.addEventListener('scroll', showHeader);
-                window.addEventListener('keydown', showHeader);
+                const startTimeout = () => {
+                    if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
+                    navTimeoutRef.current = setTimeout(() => {
+                        if (!isHoveringNav && !isAddModalOpen) setIsNavVisible(false);
+                    }, 3500);
+                };
 
-                // Inicia visível
-                showHeader();
+                window.addEventListener('mousemove', handleMouseMove);
+                startTimeout();
 
                 return () => {
-                    window.removeEventListener('mousemove', showHeader);
-                    window.removeEventListener('touchstart', showHeader);
-                    window.removeEventListener('scroll', showHeader);
-                    window.removeEventListener('keydown', showHeader);
-                    if (headerTimeoutRef.current) clearTimeout(headerTimeoutRef.current);
+                    window.removeEventListener('mousemove', handleMouseMove);
+                    if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
                 };
-            }, [chats.length]);
+            }, [chats.length, isHoveringNav, isAddModalOpen]);
 
-            const addChat = async (e) => {
-                e.preventDefault();
-                if(!inputVal.trim()) return;
-                
-                let name = inputVal.trim();
+            const handleAddChat = async (platform, inputStr) => {
+                let name = inputStr.trim();
                 let originalName = name;
                 let ytVideoId = null;
                 let isSearching = false;
@@ -572,15 +464,11 @@
                 if(platform === 'youtube') {
                     const match = name.match(/(?:v=|\/|youtu\.be\/)([0-9A-Za-z_-]{11})/);
                     if(match) {
-                        name = match[1];
-                        ytVideoId = name;
-                        originalName = name;
+                        name = match[1]; ytVideoId = name; originalName = name;
                     } else if (/^[a-zA-Z0-9_-]{11}$/.test(name)) {
-                        ytVideoId = name;
-                        originalName = name;
+                        ytVideoId = name; originalName = name;
                     } else {
                         isSearching = true;
-                        // Adiciona o '@' automaticamente se a pessoa digitou apenas o nome de utilizador
                         if (!originalName.startsWith('@')) originalName = '@' + originalName;
                     }
                 } else {
@@ -589,17 +477,16 @@
                 }
 
                 if(chats.some(c => (c.name === name || c.originalName === originalName) && c.platform === platform)) {
-                    alert("Chat já adicionado!");
-                    return;
+                    alert("Este chat já está aberto!"); return;
                 }
 
                 const newChat = { id: Date.now(), name, originalName, platform, ytVideoId, isSearching };
                 const isFirstChat = chats.length === 0;
 
                 setChats(prev => [...prev, newChat]);
-                setInputVal("");
+                setIsAddModalOpen(false);
+                forceHideNav();
 
-                // Se for o primeiro chat sendo adicionado, entra direto no modo foco
                 if(isFirstChat) {
                     setLayoutMode('focus');
                     setFocusedId(newChat.id);
@@ -607,56 +494,15 @@
 
                 if(isSearching) {
                     const liveId = await checkYTLive(originalName);
-                    setChats(prev => prev.map(c => c.id === newChat.id ? { ...c, ytVideoId: liveId, isSearching: !liveId } : c));
+                    setChats(prev => prev.map(c => c.id === newChat.id ? { ...c, ytVideoId: liveId, isSearching: false } : c));
                 }
-            };
-            
-            const addSuggestion = (name, plat) => {
-                if(plat === 'youtube' && name === 'y4tPb3eYiAQ') {
-                    setShowYtWarning(true);
-                    return;
-                }
-                
-                if(chats.some(c => c.name === name && c.platform === plat)) return;
-                
-                const isFirstChat = chats.length === 0;
-                const newChat = { id: Date.now(), name, platform: plat, originalName: name };
-                
-                setChats(prev => [...prev, newChat]);
-
-                if (isFirstChat) {
-                    setLayoutMode('focus');
-                    setFocusedId(newChat.id);
-                }
-            };
-
-            const confirmYoutubeSuggestion = () => {
-                const name = 'y4tPb3eYiAQ';
-                const plat = 'youtube';
-                if(!chats.some(c => c.name === name && c.platform === plat)) {
-                    const isFirstChat = chats.length === 0;
-                    const newChat = { id: Date.now(), name, platform: plat, originalName: name };
-                    setChats(prev => [...prev, newChat]);
-                    
-                    if (isFirstChat) {
-                        setLayoutMode('focus');
-                        setFocusedId(newChat.id);
-                    }
-                }
-                setShowYtWarning(false);
             };
 
             const removeChat = (id) => {
                 setChats(prev => {
                     const next = prev.filter(c => c.id !== id);
                     if (focusedId === id) setFocusedId(next.length > 0 ? next[0].id : null);
-                    
-                    // Se sobrou apenas 1 chat, força o modo foco para manter a intuitividade
-                    if (next.length === 1) {
-                        setLayoutMode('focus');
-                        setFocusedId(next[0].id);
-                    }
-                    
+                    if (next.length === 1) { setLayoutMode('focus'); setFocusedId(next[0].id); }
                     return next;
                 });
             };
@@ -670,80 +516,105 @@
                         <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-[#a5f3fc]/10 blur-[150px] animate-aurora-2 mix-blend-screen"></div>
                     </div>
 
-                    <HeroBrand isVisible={isHeaderVisible} isFocusMode={layoutMode === 'focus' && chats.length > 0} />
-                    <Credits />
+                    <HeroBrand isVisible={isNavVisible} hasChats={chats.length > 0} />
                     
-                    <YoutubeWarningModal 
-                        isOpen={showYtWarning} 
-                        onClose={() => setShowYtWarning(false)} 
-                        onConfirm={confirmYoutubeSuggestion} 
-                    />
+                    {/* Modais */}
+                    <AddChatModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onAdd={handleAddChat} />
+                    <YoutubeWarningModal isOpen={showYtWarning} onClose={() => setShowYtWarning(false)} onConfirm={() => {
+                        handleAddChat('youtube', 'y4tPb3eYiAQ');
+                        setShowYtWarning(false);
+                    }} />
 
-                    {/* Header + Controls */}
-                    <div className={`header-container ${!isHeaderVisible && chats.length > 0 ? 'header-hidden' : ''}`}>
-                        <form onSubmit={addChat} className="command-bar group">
-                            <PlatformSelector selected={platform} onSelect={setPlatform} />
-                            <div className="flex-1 h-full relative">
-                                <input 
-                                    type="text" 
-                                    value={inputVal} 
-                                    onChange={e => setInputVal(e.target.value)} 
-                                    placeholder={
-                                        platform==='twitch' ? "Ex: jonvlogs..." : 
-                                        platform==='kick' ? "Ex: adinross..." : 
-                                        "Ex: Nome do Canal, URL ou ID..."
-                                    } 
-                                    className="w-full h-full bg-transparent text-sm px-2 focus:outline-none text-white placeholder-gray-500 font-medium"
-                                />
-                            </div>
-                            <button type="submit" className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 shadow-lg active:scale-95 transition-transform shrink-0" title="Adicionar">
-                                <PlusIcon />
+                    {/* Dica para reabrir (Mobile/Touch) */}
+                    {!isNavVisible && chats.length > 0 && (
+                        <div className="fixed top-0 left-1/2 -translate-x-1/2 z-[80] flex justify-center animate-fade-in group" onMouseEnter={() => setIsNavVisible(true)}>
+                            <button type="button" onClick={() => setIsNavVisible(true)} className="w-14 h-6 bg-[#121215]/80 backdrop-blur-md border border-white/10 border-t-0 rounded-b-xl flex items-center justify-center text-white/30 hover:text-white transition-all shadow-lg">
+                                <ChevronDownIcon />
                             </button>
-                        </form>
-                        
-                        {/* Suggestions - Always visible in header */}
-                        <div className="flex gap-3 animate-fade-in mt-[-0.5rem] items-center">
-                            <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Sugestões:</span>
-                            <button onClick={() => addSuggestion('jonvlogs', 'twitch')} className="text-xs text-[#9146ff] hover:text-white bg-[#9146ff]/10 hover:bg-[#9146ff] px-2 py-0.5 rounded border border-[#9146ff]/20 transition-all">JonVlogs</button>
-                            <button onClick={() => addSuggestion('y4tPb3eYiAQ', 'youtube')} className="text-xs text-[#ff0000] hover:text-white bg-[#ff0000]/10 hover:bg-[#ff0000] px-2 py-0.5 rounded border border-[#ff0000]/20 transition-all">Jonvlogs (YT - Exemplo)</button>
                         </div>
+                    )}
 
-                        {/* Layout Toggle */}
-                        {chats.length > 0 && (
-                            <div className="flex bg-[#121215]/80 backdrop-blur-md rounded-full p-1 border border-white/5 shadow-lg animate-fade-in shrink-0">
+                    {/* THE DYNAMIC ISLAND (Substitui Footer e Header Antigo) */}
+                    <div 
+                        className={`dynamic-island flex items-center justify-center ${!isNavVisible && chats.length > 0 ? 'island-hidden' : ''}`}
+                        onMouseEnter={() => setIsHoveringNav(true)} 
+                        onMouseLeave={() => setIsHoveringNav(false)}
+                        onTouchStart={() => setIsHoveringNav(true)}
+                        onTouchEnd={() => setTimeout(() => setIsHoveringNav(false), 500)}
+                    >
+                        {chats.length === 0 ? (
+                            /* ESTADO VAZIO: Botão Grande com "+" e Ícones */
+                            <div className="flex flex-col items-center gap-4 mt-20 md:mt-0">
                                 <button 
-                                    onClick={() => setLayoutMode('grid')}
-                                    className={`p-1.5 rounded-full transition-all flex items-center gap-1.5 px-3 ${layoutMode === 'grid' ? 'bg-white text-black font-bold' : 'text-gray-400 hover:text-white'}`}
+                                    onClick={() => setIsAddModalOpen(true)}
+                                    className="bg-[#121215]/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-full px-6 py-4 flex items-center gap-4 hover:scale-105 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
                                 >
-                                    <GridIcon /> <span className="text-[10px] uppercase">Grade</span>
+                                    <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
+                                        <PlusIcon size={18} />
+                                    </div>
+                                    <span className="font-bold text-base tracking-wide text-white">Adicionar Chat</span>
+                                    <div className="flex items-center gap-2 ml-2 pl-4 border-l border-white/10">
+                                        <span className="text-[#9146ff]"><TwitchIcon width={18} height={18}/></span>
+                                        <span className="text-[#53fc18]"><KickIcon width={18} height={18}/></span>
+                                        <span className="text-[#ff0000]"><YoutubeIcon width={18} height={18}/></span>
+                                    </div>
                                 </button>
+                                
+                                {/* Sugestões (Estado Vazio) */}
+                                <div className="flex gap-3 items-center opacity-60">
+                                    <span className="text-[10px] uppercase font-bold text-gray-400">Sugestões:</span>
+                                    <button onClick={() => handleAddChat('twitch', 'jonvlogs')} className="text-xs text-[#9146ff] hover:text-white hover:underline transition-all">JonVlogs</button>
+                                    <button onClick={() => setShowYtWarning(true)} className="text-xs text-[#ff0000] hover:text-white hover:underline transition-all">YT Exemplo</button>
+                                </div>
+                            </div>
+                        ) : (
+                            /* ESTADO COM CHATS: Abas Coloridas + Controles + Add Button */
+                            <div className="bg-[#121215]/85 backdrop-blur-2xl border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)] rounded-full p-1.5 flex items-center gap-2 hide-scroll overflow-x-auto w-full max-w-full">
+                                
+                                {/* Lista de Abas de Chat */}
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                    {chats.map(c => {
+                                        const isActive = focusedId === c.id;
+                                        const pColor = PLATFORMS[c.platform].color;
+                                        const pBg = PLATFORMS[c.platform].bg;
+                                        const pBorder = PLATFORMS[c.platform].border;
+                                        const pIcon = PLATFORMS[c.platform].icon;
+                                        
+                                        return (
+                                            <button 
+                                                key={c.id} onClick={() => { setLayoutMode('focus'); setFocusedId(c.id); }}
+                                                className={`relative flex items-center gap-2 px-3.5 py-2 rounded-full font-bold text-xs transition-all duration-300 ${isActive ? `${pBg}/20 ${pBorder} ${pColor} border shadow-lg scale-100` : `border border-transparent bg-transparent text-gray-400 hover:bg-white/5 hover:${pColor}`}`}
+                                            >
+                                                <span className={isActive ? pColor : ''}>{pIcon}</span>
+                                                <span className="truncate max-w-[80px] md:max-w-[120px]">{c.originalName || c.name}</span>
+                                                {c.platform === 'youtube' && c.isSearching && <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#6366f1] rounded-full animate-ping"></span>}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Botão Discreto de Adicionar Mais (+) */}
                                 <button 
-                                    onClick={() => setLayoutMode('list')}
-                                    className={`p-1.5 rounded-full transition-all flex items-center gap-1.5 px-3 ${layoutMode === 'list' ? 'bg-white text-black font-bold' : 'text-gray-400 hover:text-white'}`}
+                                    onClick={() => setIsAddModalOpen(true)}
+                                    className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 border border-white/5 flex items-center justify-center text-white shrink-0 transition-colors ml-1"
+                                    title="Adicionar Novo Chat"
                                 >
-                                    <ListIcon /> <span className="text-[10px] uppercase">Vert</span>
+                                    <PlusIcon size={16} />
                                 </button>
-                                <button 
-                                    onClick={() => { setLayoutMode('focus'); if(!focusedId && chats.length>0) setFocusedId(chats[0].id); }}
-                                    className={`p-1.5 rounded-full transition-all flex items-center gap-1.5 px-3 ${layoutMode === 'focus' ? 'bg-white text-black font-bold' : 'text-gray-400 hover:text-white'}`}
-                                >
-                                    <FocusIcon /> <span className="text-[10px] uppercase">Foco</span>
-                                </button>
+
+                                <div className="w-px h-5 bg-white/10 mx-1 shrink-0"></div>
+
+                                {/* Controles de Layout */}
+                                <div className="flex items-center gap-1 shrink-0">
+                                    <button onClick={() => setLayoutMode('grid')} className={`p-2 rounded-full transition-all ${layoutMode === 'grid' ? 'bg-white text-black' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}><GridIcon /></button>
+                                    <button onClick={() => setLayoutMode('list')} className={`p-2 rounded-full transition-all ${layoutMode === 'list' ? 'bg-white text-black' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}><ListIcon /></button>
+                                </div>
                             </div>
                         )}
                     </div>
 
                     {/* Chat Container */}
-                    <div className={`chat-container scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent ${layoutMode === 'grid' ? 'mode-grid' : layoutMode === 'list' ? 'mode-list' : 'mode-focus'} ${!isHeaderVisible && chats.length > 0 ? 'full-view' : ''}`}>
-                        {chats.length === 0 && (
-                            <div className="flex flex-col items-center justify-center text-center opacity-40 mt-32 h-full w-full">
-                                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 animate-pulse-glow">
-                                    <ChatIcon size={32} />
-                                </div>
-                                <h3 className="text-lg font-bold text-white mb-2">Painel Vazio</h3>
-                                <p className="text-xs text-gray-400 max-w-xs px-4">Adicione chats para começar ou use as sugestões acima.</p>
-                            </div>
-                        )}
+                    <div className={`chat-container hide-scroll ${layoutMode === 'grid' ? 'mode-grid' : layoutMode === 'list' ? 'mode-list' : 'mode-focus'} ${!isNavVisible && chats.length > 0 ? 'full-view' : ''}`}>
                         {chats.map(chat => (
                             <ChatCard 
                                 key={chat.id} 
@@ -755,25 +626,6 @@
                             />
                         ))}
                     </div>
-
-                    {/* Dock Inferior para Modo Foco */}
-                    {layoutMode === 'focus' && chats.length > 1 && (
-                        <div className={`bottom-dock ${!isHeaderVisible ? 'dock-hidden' : ''}`}>
-                            {chats.map(c => (
-                                <button 
-                                    key={c.id} 
-                                    onClick={() => setFocusedId(c.id)} 
-                                    className={`relative flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs transition-all ${focusedId === c.id ? 'bg-white text-black scale-105 shadow-xl' : 'bg-transparent text-gray-400 hover:text-white hover:bg-white/10'}`}
-                                >
-                                    <span className={focusedId === c.id ? 'text-black' : getPlatformColor(c.platform)}>
-                                        {c.platform === 'twitch' ? <TwitchIcon width={14} height={14}/> : c.platform === 'kick' ? <span className="font-bold text-[10px]">K</span> : <YoutubeIcon width={14} height={14}/>}
-                                    </span>
-                                    <span className="truncate max-w-[100px]">{c.originalName || c.name}</span>
-                                    {c.platform === 'youtube' && c.isSearching && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#6366f1] rounded-full animate-ping"></span>}
-                                </button>
-                            ))}
-                        </div>
-                    )}
 
                 </div>
             );
