@@ -67,23 +67,6 @@
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Floating Nav Bar */
-        .dynamic-island {
-            position: fixed;
-            top: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 70;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            max-width: 95vw;
-        }
-
-        .island-hidden {
-            transform: translate(-50%, -150%);
-            opacity: 0;
-            pointer-events: none;
-        }
-
         /* Logo Positioning */
         .logo-container {
             position: fixed;
@@ -96,31 +79,25 @@
             pointer-events: none;
         }
         .logo-normal { top: 6rem; transform: scale(1); opacity: 1; }
-        .logo-compact { top: 1.5rem; transform: scale(0.7); opacity: 0.8; }
         .logo-hidden { top: -5rem; transform: scale(0.5); opacity: 0; pointer-events: none; }
 
-        /* Grid Modes */
+        /* Container Modes */
         .chat-container { 
-            padding: 0 1rem 1rem 1rem; 
             height: 100dvh; 
             width: 100vw; 
-            padding-top: 5.5rem; /* Espaço perfeito para a barra flutuante */
-            transition: padding-top 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             box-sizing: border-box;
+            transition: padding 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        
+        .chat-container.empty-state { padding-top: 0; }
+        .chat-container.active-state { padding: max(0.5rem, env(safe-area-inset-top)) 0.5rem 0.5rem 0.5rem; }
 
-        .chat-container.full-view {
-            padding-top: max(0.5rem, env(safe-area-inset-top)); /* Espacinho de respiro inteligente quando oculta */
-        }
-        
-        .mode-grid { display: flex; flex-direction: row; overflow-x: auto; overflow-y: hidden; gap: 1rem; align-items: stretch; }
-        .mode-list { display: flex; flex-direction: column; gap: 1.5rem; max-width: 800px; margin: 0 auto; overflow-y: auto; }
-        
-        /* Agora preservamos o padding do topo, removendo apenas as margens laterais e inferiores para imersão */
-        .mode-focus { display: flex; flex-direction: column; overflow: hidden; padding-bottom: 0; padding-left: 0; padding-right: 0; }
+        .mode-grid { display: flex; flex-direction: row; overflow-x: auto; overflow-y: hidden; gap: 0.5rem; align-items: stretch; }
+        .mode-list { display: flex; flex-direction: column; gap: 1rem; max-width: 800px; margin: 0 auto; overflow-y: auto; }
+        .mode-focus { display: flex; flex-direction: column; overflow: hidden; padding-bottom: 0 !important; padding-left: 0 !important; padding-right: 0 !important; }
         
         .chat-hidden { position: absolute !important; opacity: 0 !important; pointer-events: none !important; width: 1px !important; height: 1px !important; z-index: -1 !important; transform: scale(0.01); }
-        .chat-focused { flex: 1; width: 100%; height: 100%; max-height: 100%; border-radius: 0; border: none; }
+        .chat-focused { flex: 1; width: 100%; height: 100%; max-height: 100%; border-radius: 0 !important; border: none !important; }
         
         .chat-card {
             display: flex; flex-direction: column; background: #0b0e11;
@@ -129,13 +106,18 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
         
-        .mode-grid .chat-card { flex: 1; min-width: 320px; height: 100%; max-height: 100%; }
+        .mode-grid .chat-card { flex: 1; min-width: 350px; height: 100%; max-height: 100%; }
         .mode-list .chat-card { height: 600px; flex-shrink: 0; }
         .chat-card:hover { border-color: rgba(165,243,252,0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .fade-mask {
+            mask-image: linear-gradient(to right, black 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
+        }
+
         .tech-gradient { background: linear-gradient(135deg, #6366f1 0%, #a5f3fc 100%); }
 
         @media (max-width: 768px) {
-            .dynamic-island { top: max(1rem, env(safe-area-inset-top)); }
             .mode-grid { flex-direction: column; overflow-x: hidden; overflow-y: auto; }
             .mode-grid .chat-card { min-width: 100%; height: 60vh; margin-bottom: 1rem; }
             .mode-list .chat-card { height: 60vh; }
@@ -160,23 +142,21 @@
         const TrashIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>;
         const ExternalLinkIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>;
         const RefreshIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M3 21v-5h5"></path></svg>;
-        const ChatIcon = ({size=18}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>;
         const LogoML = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 19V5" stroke="white" strokeWidth="3" strokeLinecap="round" /><path d="M19 19V5" stroke="white" strokeWidth="3" strokeLinecap="round" /><path d="M5 5L12 13L19 5" stroke="#a5f3fc" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>;
         const GridIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>;
         const ListIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>;
         const FocusIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3h18v18H3z"></path><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>;
         const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
         const EyeOffIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>;
-        const ChevronDownIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>;
         const AlertCircleIcon = ({size=16}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>;
 
         const hostname = typeof window!=='undefined' && window.location.hostname ? window.location.hostname : "localhost";
 
         // --- Configuração das Plataformas ---
         const PLATFORMS = {
-            twitch: { id: 'twitch', name: 'Twitch', color: 'text-[#9146ff]', bg: 'bg-[#9146ff]', border: 'border-[#9146ff]', icon: <TwitchIcon width={16} height={16}/>, placeholder: 'Ex: alanzoka...' },
-            kick: { id: 'kick', name: 'Kick', color: 'text-[#53fc18]', bg: 'bg-[#53fc18]', border: 'border-[#53fc18]', icon: <KickIcon width={16} height={16}/>, placeholder: 'Ex: paulinholoko...' },
-            youtube: { id: 'youtube', name: 'YouTube', color: 'text-[#ff0000]', bg: 'bg-[#ff0000]', border: 'border-[#ff0000]', icon: <YoutubeIcon width={16} height={16}/>, placeholder: 'Ex: @NomeDoCanal, URL ou ID' }
+            twitch: { id: 'twitch', name: 'Twitch', color: 'text-[#9146ff]', bg: 'bg-[#9146ff]', border: 'border-[#9146ff]', icon: <TwitchIcon width={16} height={16}/>, placeholder: 'Ex: alanzoka ou link...' },
+            kick: { id: 'kick', name: 'Kick', color: 'text-[#53fc18]', bg: 'bg-[#53fc18]', border: 'border-[#53fc18]', icon: <KickIcon width={16} height={16}/>, placeholder: 'Ex: paulinholoko ou link...' },
+            youtube: { id: 'youtube', name: 'YouTube', color: 'text-[#ff0000]', bg: 'bg-[#ff0000]', border: 'border-[#ff0000]', icon: <YoutubeIcon width={16} height={16}/>, placeholder: 'Link da live, ID ou @Canal' }
         };
 
         // --- Modais ---
@@ -210,7 +190,6 @@
                         </div>
                         
                         <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-5">
-                            {/* Seleção de Plataforma */}
                             <div className="grid grid-cols-3 gap-2">
                                 {Object.values(PLATFORMS).map(p => (
                                     <button 
@@ -223,7 +202,6 @@
                                 ))}
                             </div>
 
-                            {/* Input Area */}
                             <div className="flex flex-col gap-1.5">
                                 <label className="text-[10px] font-bold uppercase text-gray-500 tracking-wider">Usuário ou Link da {PLATFORMS[platform].name}</label>
                                 <input 
@@ -287,7 +265,7 @@
             );
         };
 
-        const ChatCard = ({ chat, onRemove, isHidden, isFocused, onFocus }) => {
+        const ChatCard = ({ chat, allChats, onRemove, isHidden, isFocused, onFocus, onAddClick, layoutMode, setLayoutMode }) => {
             const [refreshKey, setRefreshKey] = useState(0);
 
             const getTwitchUrl = (name) => {
@@ -302,22 +280,81 @@
 
             return (
                 <div className={`chat-card group animate-slide-up ${isHidden ? 'chat-hidden' : ''} ${isFocused ? 'chat-focused' : ''}`}>
-                    <div className="h-10 bg-[#121215] border-b border-white/5 flex items-center justify-between px-3 shrink-0 z-20">
-                        <div className="flex items-center gap-2">
-                            <div className={`flex items-center justify-center w-5 h-5 rounded bg-white/5 ${pColor}`}>{pIcon}</div>
-                            <span className="text-sm font-bold text-white tracking-tight truncate max-w-[120px] md:max-w-[150px]">{chat.originalName || chat.name}</span>
+                    {/* Cabeçalho Melhorado do ChatCard */}
+                    <div className="h-14 bg-[#121215] border-b border-white/5 flex items-center justify-between px-3 md:px-4 shrink-0 z-20">
+                        
+                        {/* Esquerda: Info do Chat Atual + Alternadores + Add */}
+                        <div className="flex items-center gap-2 overflow-x-auto hide-scroll w-full mr-2 fade-mask py-1">
+                            
+                            {/* Chat Atual (Maior e Mais Visível) */}
+                            <div className={`flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 shrink-0 shadow-inner border border-white/5 ${pColor}`}>
+                                <div className="scale-125">{pIcon}</div>
+                            </div>
+                            <span className="text-base md:text-lg font-bold text-white tracking-wide shrink-0 ml-1">
+                                {chat.originalName || chat.name}
+                            </span>
+
+                            {/* Alternador de Abas (Só aparece no Modo Foco se houverem + chats) */}
+                            {isFocused && allChats.length > 1 && (
+                                <React.Fragment>
+                                    <div className="w-px h-6 bg-white/10 shrink-0 mx-2"></div>
+                                    {allChats.filter(c => c.id !== chat.id).map(otherChat => {
+                                        const oPlatform = PLATFORMS[otherChat.platform];
+                                        return (
+                                            <button
+                                                key={otherChat.id}
+                                                onClick={() => onFocus(otherChat.id)}
+                                                className={`flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-transparent hover:border-white/20 transition-all ${oPlatform.color} shrink-0 opacity-60 hover:opacity-100 shadow-sm`}
+                                                title={`Alternar para ${otherChat.originalName || otherChat.name}`}
+                                            >
+                                                {oPlatform.icon}
+                                            </button>
+                                        );
+                                    })}
+                                </React.Fragment>
+                            )}
+
+                            {/* Botão Adicionar Chat embutido no Card */}
+                            <div className="w-px h-6 bg-white/10 shrink-0 mx-2"></div>
+                            <button
+                                onClick={onAddClick}
+                                className="flex items-center justify-center h-8 px-3 gap-1.5 rounded-full bg-white/5 hover:bg-white/15 text-white transition-colors shrink-0 border border-white/5"
+                                title="Adicionar Novo Chat"
+                            >
+                                <PlusIcon size={16} />
+                                <span className="text-[11px] font-bold uppercase tracking-wider hidden sm:block">Add</span>
+                            </button>
+
                         </div>
-                        <div className="flex items-center gap-1 opacity-100 md:opacity-60 md:group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => setRefreshKey(k => k + 1)} className="p-1.5 hover:text-white hover:bg-white/10 rounded" title="Recarregar"><RefreshIcon /></button>
+
+                        {/* Direita: Ações de Layout e Ferramentas */}
+                        <div className="flex items-center gap-1.5 shrink-0 pl-2">
+                            
+                            {/* Alternadores de Layout Embutidos (Escondidos em telas muito pequenas) */}
+                            <div className="hidden sm:flex items-center bg-black/40 rounded-full border border-white/5 p-0.5 mr-1">
+                                <button onClick={() => setLayoutMode('grid')} className={`p-1.5 rounded-full transition-all ${layoutMode === 'grid' ? 'bg-white text-black shadow' : 'text-gray-400 hover:text-white hover:bg-white/10'}`} title="Modo Grade"><GridIcon /></button>
+                                <button onClick={() => setLayoutMode('list')} className={`p-1.5 rounded-full transition-all hidden md:block ${layoutMode === 'list' ? 'bg-white text-black shadow' : 'text-gray-400 hover:text-white hover:bg-white/10'}`} title="Modo Lista Vertical"><ListIcon /></button>
+                                <button onClick={() => setLayoutMode('focus')} className={`p-1.5 rounded-full transition-all ${layoutMode === 'focus' ? 'bg-white text-black shadow' : 'text-gray-400 hover:text-white hover:bg-white/10'}`} title="Modo Foco Tela Cheia"><FocusIcon /></button>
+                            </div>
+
+                            {/* Alternador Layout Mobile (Simplificado) */}
+                            <button onClick={() => setLayoutMode(layoutMode === 'focus' ? 'grid' : 'focus')} className="p-2 text-gray-400 hover:text-white bg-black/40 rounded-lg border border-white/5 sm:hidden transition-colors">
+                                {layoutMode === 'focus' ? <GridIcon /> : <FocusIcon />}
+                            </button>
+
+                            {/* Ferramentas Básicas */}
+                            <button onClick={() => setRefreshKey(k => k + 1)} className="p-2 hover:text-white hover:bg-white/10 rounded-lg transition-colors hidden sm:block" title="Recarregar"><RefreshIcon /></button>
                             <button onClick={() => {
                                 let url = chat.platform === 'twitch' ? `https://www.twitch.tv/popout/${chat.name}/chat` : chat.platform === 'kick' ? `https://kick.com/popout/${chat.name}/chat` : `https://www.youtube.com/live_chat?v=${chat.ytVideoId || chat.name}`;
                                 window.open(url, `chat-${chat.id}`, "width=400,height=600");
-                            }} className="p-1.5 hover:text-ice hover:bg-white/10 rounded" title="Popout (Janela)"><ExternalLinkIcon /></button>
-                            {!isFocused && <button onClick={() => onFocus(chat.id)} className="p-1.5 hover:text-accent hover:bg-white/10 rounded hidden md:block" title="Focar"><FocusIcon /></button>}
-                            <button onClick={() => onRemove(chat.id)} className="p-1.5 text-red-400 hover:bg-red-500/10 rounded ml-1" title="Fechar"><TrashIcon /></button>
+                            }} className="p-2 hover:text-ice hover:bg-white/10 rounded-lg transition-colors hidden sm:block" title="Popout (Janela Nativa)"><ExternalLinkIcon /></button>
+                            
+                            {/* Botão Fechar Chat */}
+                            <button onClick={() => onRemove(chat.id)} className="p-2 text-red-400 hover:text-white hover:bg-red-500/80 rounded-lg transition-colors ml-1" title="Fechar Chat"><TrashIcon /></button>
                         </div>
                     </div>
                     
+                    {/* Renderizador do Iframe */}
                     <div className="flex-1 relative bg-[#09090b] flex items-center justify-center">
                         {chat.platform === 'youtube' && chat.isSearching ? (
                             <div className="text-center animate-pulse-glow flex flex-col items-center gap-2 opacity-50">
@@ -339,12 +376,9 @@
             );
         };
 
-        const HeroBrand = ({ isVisible, hasChats }) => {
-            let logoClass = 'logo-normal';
-            if (hasChats) logoClass = isVisible ? 'logo-compact' : 'logo-hidden';
-
+        const HeroBrand = ({ hasChats }) => {
             return (
-                <div className={`logo-container ${logoClass}`}>
+                <div className={`logo-container ${hasChats ? 'logo-hidden' : 'logo-normal'}`}>
                      <div className="flex items-center gap-3">
                         <div className="w-10 h-10 md:w-12 md:h-12 tech-gradient rounded-xl flex items-center justify-center text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] ring-1 ring-white/20">
                             <LogoML />
@@ -363,13 +397,8 @@
             const [chats, setChats] = useState([]);
             const [layoutMode, setLayoutMode] = useState("grid");
             const [focusedId, setFocusedId] = useState(null);
-            
-            const [isNavVisible, setIsNavVisible] = useState(true);
-            const [isHoveringNav, setIsHoveringNav] = useState(false);
-            
             const [isAddModalOpen, setIsAddModalOpen] = useState(false);
             const [showYtWarning, setShowYtWarning] = useState(false);
-            const navTimeoutRef = useRef(null);
 
             // Carregar do localStorage
             useEffect(() => {
@@ -382,33 +411,28 @@
             useEffect(() => { localStorage.setItem('multichats-data', JSON.stringify(chats)); }, [chats]);
             useEffect(() => { localStorage.setItem('multichats-layout', layoutMode); }, [layoutMode]);
 
-            // Forçar ocultação
-            const forceHideNav = () => {
-                setIsNavVisible(false);
-                if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
-            };
-
-            // YouTube Auto-Discovery
+            // YouTube Auto-Discovery (Sistema Duplo Seguro)
             const checkYTLive = async (handle) => {
                 const clean = handle.replace('@', '');
+                const targetUrl = `https://www.youtube.com/@${clean}/live`;
+                
                 try {
-                    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.youtube.com/@${clean}/live`)}`;
-                    const res = await fetch(proxyUrl);
-                    const data = await res.json();
-                    if (data.contents && (data.contents.includes('"isLiveBroadcast":true') || data.contents.includes('BADGE_STYLE_TYPE_LIVE_NOW'))) {
+                    const res = await fetch(`https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(targetUrl)}`);
+                    const html = await res.text();
+                    const canonicalMatch = html.match(/<link rel="canonical" href="https:\/\/www.youtube.com\/watch\?v=([a-zA-Z0-9_-]{11})"/);
+                    if (canonicalMatch && canonicalMatch[1]) return canonicalMatch[1];
+                } catch(e) {}
+                
+                try {
+                    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+                    const res2 = await fetch(proxyUrl);
+                    const data = await res2.json();
+                    if (data && data.contents) {
                         const canonicalMatch = data.contents.match(/<link rel="canonical" href="https:\/\/www.youtube.com\/watch\?v=([a-zA-Z0-9_-]{11})"/);
-                        const videoIdMatch = data.contents.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
                         if (canonicalMatch && canonicalMatch[1]) return canonicalMatch[1];
-                        if (videoIdMatch && videoIdMatch[1]) return videoIdMatch[1];
                     }
                 } catch(e) {}
-                try {
-                    const fallbackUrl = `https://corsproxy.io/?${encodeURIComponent(`https://www.youtube.com/@${clean}/streams`)}`;
-                    const res2 = await fetch(fallbackUrl);
-                    const html2 = await res2.text();
-                    const match2 = html2.match(/"BADGE_STYLE_TYPE_LIVE_NOW".*?"videoId":"([a-zA-Z0-9_-]{11})"/);
-                    if (match2 && match2[1]) return match2[1];
-                } catch(e) {}
+                
                 return null;
             };
 
@@ -423,38 +447,6 @@
                 return () => clearInterval(interval);
             }, [chats]);
 
-            // Sistema Auto-Ocultar (Smart Dynamic Island)
-            useEffect(() => {
-                if (chats.length === 0 || isAddModalOpen) {
-                    setIsNavVisible(true);
-                    return;
-                }
-                if (isHoveringNav) {
-                    setIsNavVisible(true);
-                    if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
-                    return;
-                }
-
-                const handleMouseMove = (e) => {
-                    if (e.clientY < 90) { setIsNavVisible(true); startTimeout(); }
-                };
-
-                const startTimeout = () => {
-                    if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
-                    navTimeoutRef.current = setTimeout(() => {
-                        if (!isHoveringNav && !isAddModalOpen) setIsNavVisible(false);
-                    }, 3500);
-                };
-
-                window.addEventListener('mousemove', handleMouseMove);
-                startTimeout();
-
-                return () => {
-                    window.removeEventListener('mousemove', handleMouseMove);
-                    if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
-                };
-            }, [chats.length, isHoveringNav, isAddModalOpen]);
-
             const handleAddChat = async (platform, inputStr) => {
                 let name = inputStr.trim();
                 let originalName = name;
@@ -462,17 +454,30 @@
                 let isSearching = false;
                 
                 if(platform === 'youtube') {
-                    const match = name.match(/(?:v=|\/|youtu\.be\/)([0-9A-Za-z_-]{11})/);
-                    if(match) {
-                        name = match[1]; ytVideoId = name; originalName = name;
+                    const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|live)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+                    const match = name.match(ytRegex);
+
+                    if (match && match[1]) {
+                        ytVideoId = match[1]; name = match[1]; originalName = name;
                     } else if (/^[a-zA-Z0-9_-]{11}$/.test(name)) {
                         ytVideoId = name; originalName = name;
                     } else {
                         isSearching = true;
-                        if (!originalName.startsWith('@')) originalName = '@' + originalName;
+                        let handle = name;
+                        const handleMatch = handle.match(/youtube\.com\/(@[a-zA-Z0-9_-]+)/);
+                        if (handleMatch) handle = handleMatch[1];
+                        else if (!handle.startsWith('@')) handle = '@' + handle;
+                        originalName = handle; name = handle;
                     }
                 } else {
                     name = name.toLowerCase().replace('@', '');
+                    if (platform === 'twitch') {
+                        const twMatch = name.match(/twitch\.tv\/([a-zA-Z0-9_]+)/);
+                        if (twMatch) name = twMatch[1];
+                    } else if (platform === 'kick') {
+                        const kickMatch = name.match(/kick\.com\/([a-zA-Z0-9_]+)/);
+                        if (kickMatch) name = kickMatch[1];
+                    }
                     originalName = name;
                 }
 
@@ -481,16 +486,13 @@
                 }
 
                 const newChat = { id: Date.now(), name, originalName, platform, ytVideoId, isSearching };
-                const isFirstChat = chats.length === 0;
 
                 setChats(prev => [...prev, newChat]);
                 setIsAddModalOpen(false);
-                forceHideNav();
 
-                if(isFirstChat) {
-                    setLayoutMode('focus');
-                    setFocusedId(newChat.id);
-                }
+                // Alterna automaticamente para o novo chat em Modo Foco
+                setLayoutMode('focus');
+                setFocusedId(newChat.id);
 
                 if(isSearching) {
                     const liveId = await checkYTLive(originalName);
@@ -516,7 +518,7 @@
                         <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-[#a5f3fc]/10 blur-[150px] animate-aurora-2 mix-blend-screen"></div>
                     </div>
 
-                    <HeroBrand isVisible={isNavVisible} hasChats={chats.length > 0} />
+                    <HeroBrand hasChats={chats.length > 0} />
                     
                     {/* Modais */}
                     <AddChatModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onAdd={handleAddChat} />
@@ -525,106 +527,50 @@
                         setShowYtWarning(false);
                     }} />
 
-                    {/* Dica para reabrir (Mobile/Touch) */}
-                    {!isNavVisible && chats.length > 0 && (
-                        <div className="fixed top-0 left-1/2 -translate-x-1/2 z-[80] flex justify-center animate-fade-in group" onMouseEnter={() => setIsNavVisible(true)}>
-                            <button type="button" onClick={() => setIsNavVisible(true)} className="w-14 h-6 bg-[#121215]/80 backdrop-blur-md border border-white/10 border-t-0 rounded-b-xl flex items-center justify-center text-white/30 hover:text-white transition-all shadow-lg">
-                                <ChevronDownIcon />
-                            </button>
-                        </div>
-                    )}
-
-                    {/* THE DYNAMIC ISLAND (Substitui Footer e Header Antigo) */}
-                    <div 
-                        className={`dynamic-island flex items-center justify-center ${!isNavVisible && chats.length > 0 ? 'island-hidden' : ''}`}
-                        onMouseEnter={() => setIsHoveringNav(true)} 
-                        onMouseLeave={() => setIsHoveringNav(false)}
-                        onTouchStart={() => setIsHoveringNav(true)}
-                        onTouchEnd={() => setTimeout(() => setIsHoveringNav(false), 500)}
-                    >
+                    {/* Chat Container (Aplica o Empty State Centrado se não houver chats) */}
+                    <div className={`chat-container hide-scroll ${chats.length === 0 ? 'empty-state' : 'active-state'} ${layoutMode === 'grid' ? 'mode-grid' : layoutMode === 'list' ? 'mode-list' : 'mode-focus'}`}>
+                        
                         {chats.length === 0 ? (
-                            /* ESTADO VAZIO: Botão Grande com "+" e Ícones */
-                            <div className="flex flex-col items-center gap-4 mt-20 md:mt-0">
+                            /* ESTADO VAZIO: Centralizado na tela */
+                            <div className="flex flex-col items-center justify-center h-full gap-4 w-full animate-fade-in relative z-10">
                                 <button 
                                     onClick={() => setIsAddModalOpen(true)}
-                                    className="bg-[#121215]/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-full px-6 py-4 flex items-center gap-4 hover:scale-105 hover:bg-white/5 hover:border-white/20 transition-all duration-300"
+                                    className="bg-[#121215]/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-full px-8 py-5 flex items-center gap-4 hover:scale-105 hover:bg-white/5 hover:border-white/20 transition-all duration-300 group"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
-                                        <PlusIcon size={18} />
+                                    <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center group-hover:rotate-90 transition-transform duration-300">
+                                        <PlusIcon size={22} />
                                     </div>
-                                    <span className="font-bold text-base tracking-wide text-white">Adicionar Chat</span>
-                                    <div className="flex items-center gap-2 ml-2 pl-4 border-l border-white/10">
-                                        <span className="text-[#9146ff]"><TwitchIcon width={18} height={18}/></span>
-                                        <span className="text-[#53fc18]"><KickIcon width={18} height={18}/></span>
-                                        <span className="text-[#ff0000]"><YoutubeIcon width={18} height={18}/></span>
+                                    <span className="font-extrabold text-lg tracking-wide text-white">Adicionar Chat</span>
+                                    <div className="flex items-center gap-2.5 ml-2 pl-4 border-l border-white/10">
+                                        <span className="text-[#9146ff]"><TwitchIcon width={22} height={22}/></span>
+                                        <span className="text-[#53fc18]"><KickIcon width={22} height={22}/></span>
+                                        <span className="text-[#ff0000]"><YoutubeIcon width={22} height={22}/></span>
                                     </div>
                                 </button>
                                 
-                                {/* Sugestões (Estado Vazio) */}
-                                <div className="flex gap-3 items-center opacity-60">
-                                    <span className="text-[10px] uppercase font-bold text-gray-400">Sugestões:</span>
-                                    <button onClick={() => handleAddChat('twitch', 'jonvlogs')} className="text-xs text-[#9146ff] hover:text-white hover:underline transition-all">JonVlogs</button>
-                                    <button onClick={() => setShowYtWarning(true)} className="text-xs text-[#ff0000] hover:text-white hover:underline transition-all">YT Exemplo</button>
+                                <div className="flex gap-3 items-center opacity-50 mt-2">
+                                    <span className="text-[10px] uppercase font-bold text-gray-400">Sugestões Rápidas:</span>
+                                    <button onClick={() => handleAddChat('twitch', 'jonvlogs')} className="text-xs text-[#9146ff] hover:text-white hover:underline transition-all font-bold">JonVlogs (Twitch)</button>
+                                    <button onClick={() => handleAddChat('youtube', '@jonvlogs')} className="text-xs text-[#ff0000] hover:text-white hover:underline transition-all font-bold">JonVlogs (YouTube)</button>
                                 </div>
                             </div>
                         ) : (
-                            /* ESTADO COM CHATS: Abas Coloridas + Controles + Add Button */
-                            <div className="bg-[#121215]/85 backdrop-blur-2xl border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)] rounded-full p-1.5 flex items-center gap-2 hide-scroll overflow-x-auto w-full max-w-full">
-                                
-                                {/* Lista de Abas de Chat */}
-                                <div className="flex items-center gap-1.5 shrink-0">
-                                    {chats.map(c => {
-                                        const isActive = focusedId === c.id;
-                                        const pColor = PLATFORMS[c.platform].color;
-                                        const pBg = PLATFORMS[c.platform].bg;
-                                        const pBorder = PLATFORMS[c.platform].border;
-                                        const pIcon = PLATFORMS[c.platform].icon;
-                                        
-                                        return (
-                                            <button 
-                                                key={c.id} onClick={() => { setLayoutMode('focus'); setFocusedId(c.id); }}
-                                                className={`relative flex items-center gap-2 px-3.5 py-2 rounded-full font-bold text-xs transition-all duration-300 ${isActive ? `${pBg}/20 ${pBorder} ${pColor} border shadow-lg scale-100` : `border border-transparent bg-transparent text-gray-400 hover:bg-white/5 hover:${pColor}`}`}
-                                            >
-                                                <span className={isActive ? pColor : ''}>{pIcon}</span>
-                                                <span className="truncate max-w-[80px] md:max-w-[120px]">{c.originalName || c.name}</span>
-                                                {c.platform === 'youtube' && c.isSearching && <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#6366f1] rounded-full animate-ping"></span>}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-
-                                {/* Botão Discreto de Adicionar Mais (+) */}
-                                <button 
-                                    onClick={() => setIsAddModalOpen(true)}
-                                    className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 border border-white/5 flex items-center justify-center text-white shrink-0 transition-colors ml-1"
-                                    title="Adicionar Novo Chat"
-                                >
-                                    <PlusIcon size={16} />
-                                </button>
-
-                                <div className="w-px h-5 bg-white/10 mx-1 shrink-0"></div>
-
-                                {/* Controles de Layout */}
-                                <div className="flex items-center gap-1 shrink-0">
-                                    <button onClick={() => setLayoutMode('grid')} className={`p-2 rounded-full transition-all ${layoutMode === 'grid' ? 'bg-white text-black' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}><GridIcon /></button>
-                                    <button onClick={() => setLayoutMode('list')} className={`p-2 rounded-full transition-all ${layoutMode === 'list' ? 'bg-white text-black' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}><ListIcon /></button>
-                                </div>
-                            </div>
+                            /* CARDS DE CHAT ATIVOS */
+                            chats.map(chat => (
+                                <ChatCard 
+                                    key={chat.id} 
+                                    chat={chat} 
+                                    allChats={chats} 
+                                    onRemove={removeChat}
+                                    onAddClick={() => setIsAddModalOpen(true)}
+                                    layoutMode={layoutMode}
+                                    setLayoutMode={setLayoutMode}
+                                    isHidden={layoutMode === 'focus' && focusedId !== chat.id}
+                                    isFocused={layoutMode === 'focus' && focusedId === chat.id}
+                                    onFocus={(id) => { setLayoutMode('focus'); setFocusedId(id); }}
+                                />
+                            ))
                         )}
-                    </div>
-
-                    {/* Chat Container */}
-                    <div className={`chat-container hide-scroll ${layoutMode === 'grid' ? 'mode-grid' : layoutMode === 'list' ? 'mode-list' : 'mode-focus'} ${!isNavVisible && chats.length > 0 ? 'full-view' : ''}`}>
-                        {chats.map(chat => (
-                            <ChatCard 
-                                key={chat.id} 
-                                chat={chat} 
-                                onRemove={removeChat}
-                                isHidden={layoutMode === 'focus' && focusedId !== chat.id}
-                                isFocused={layoutMode === 'focus' && focusedId === chat.id}
-                                onFocus={(id) => { setLayoutMode('focus'); setFocusedId(id); }}
-                            />
-                        ))}
                     </div>
 
                 </div>
