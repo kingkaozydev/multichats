@@ -442,9 +442,35 @@
             // Carregar do localStorage
             useEffect(() => {
                 const saved = localStorage.getItem('multichats-data');
-                if(saved) { try { setChats(JSON.parse(saved)); } catch(e) {} }
+                if(saved) { 
+                    try { 
+                        const parsedChats = JSON.parse(saved);
+                        // Validação e Sanitização de Dados Antigos
+                        if (Array.isArray(parsedChats)) {
+                            const validChats = parsedChats
+                                .filter(c => c && c.id && c.name && c.platform) // Ignora se faltar o essencial
+                                .map(c => ({
+                                    ...c,
+                                    originalName: c.originalName || c.name, // Garante que o nome original existe (versões antigas n tinham)
+                                    isSearching: false // Previne ficar preso em "buscando..." se a página recarregar
+                                }));
+                            setChats(validChats);
+                        } else {
+                            localStorage.removeItem('multichats-data'); // Formato totalmente incorreto, limpa tudo.
+                        }
+                    } catch(e) {
+                        localStorage.removeItem('multichats-data'); // Se o JSON estiver quebrado, limpa
+                    } 
+                }
+                
+                // Limpeza proativa de chaves de versões antigas para libertar espaço
+                localStorage.removeItem('multichat-v2');
+                localStorage.removeItem('nevethon-multichat');
+
                 const savedLayout = localStorage.getItem('multichats-layout');
-                if(savedLayout) setLayoutMode(savedLayout);
+                if(savedLayout && ['grid', 'list', 'focus'].includes(savedLayout)) {
+                    setLayoutMode(savedLayout);
+                }
             }, []);
 
             useEffect(() => { localStorage.setItem('multichats-data', JSON.stringify(chats)); }, [chats]);
